@@ -1,8 +1,7 @@
-// import Router from 'koa-router';
-// import * as postCtrl from './post.controller';
+import Router from 'koa-router';
 
-// const post = new Router();
+import {} from './post.ctrl';
 
-// post.post('/new', postCtrl.newPost);
+const post = new Router();
 
-// export default post;
+export default post;

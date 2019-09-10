@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import { CheckAuth, Login, RegStudent, RegTeacher, RegGuest  } from './auth.controller';
+import { CheckAuth, Login, RegStudent, RegTeacher, RegGuest  } from './auth.ctrl';
 
 const auth = new Router();
 
