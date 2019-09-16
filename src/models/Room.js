@@ -22,6 +22,8 @@ export const Room = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         }
+    }, {
+        timestamps: false
     });
 };
 
@@ -52,5 +54,7 @@ export const RoomApply = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: true
         }
-    })
+    }, {
+        timestamps: false
+    });
 };
