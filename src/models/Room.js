@@ -1,4 +1,4 @@
-export const Rooms = (sequelize, DataTypes) => {
+export const Room = (sequelize, DataTypes) => {
     return sequelize.define("Rooms", {
         allocation_id: {
             type: DataTypes.INTEGER,
@@ -23,4 +23,34 @@ export const Rooms = (sequelize, DataTypes) => {
             allowNull: false
         }
     });
+};
+
+export const RoomApply = (sequelize, DataTypes) => {
+    return sequelize.define("room_apply", {
+        apply_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        user_id2: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        user_id3: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        user_id4: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        user_id5: {
+            type: DataTypes.INTEGER,
+            allowNull: true
+        }
+    })
 };
