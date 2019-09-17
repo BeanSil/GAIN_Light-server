@@ -1,9 +1,8 @@
 export const Teacher = (sequelize, DataTypes) => {
-    return sequelize.define('Teacher', {
-        userCode : {
-            type : DataTypes.STRING(5),
-            primaryKey : true,
-            allowNull : false
+    return sequelize.define('teacher', {
+        user_id : {
+            type : DataTypes.INTEGER,
+            primaryKey : true
         },
         name : {
             type : DataTypes.STRING(50),
@@ -11,11 +10,6 @@ export const Teacher = (sequelize, DataTypes) => {
         },
         phone : {
             type : DataTypes.STRING(11),
-            allowNull : false,
-            unique : true
-        },
-        email : {
-            type : DataTypes.STRING,
             allowNull : false,
             unique : true
         }
