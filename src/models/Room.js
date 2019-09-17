@@ -14,12 +14,17 @@ export const Room = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        is_banned: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            default: false
+        },
         year: {
             type: DataTypes.YEAR,
             allowNull: false
         },
         quarter: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.TINYINT,
             allowNull: false
         }
     }, {
@@ -33,6 +38,10 @@ export const RoomApply = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
+        },
+        length: {
+            type: DataTypes.TINYINT,
+            allowNull: false
         },
         user_id: {
             type: DataTypes.INTEGER,
