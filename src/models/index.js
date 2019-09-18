@@ -6,6 +6,7 @@ import { Student } from './Student';
 import { Teacher } from './Teacher';
 import { Guest } from './Guest';
 import { Laptop } from './Laptop';
+import { Board } from './Board';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['gain'];
 
@@ -21,5 +22,6 @@ const student = Student(sequelize, Sequelize);
 const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
 const laptop = Laptop(sequelize, Sequelize);
+const board = Board(sequelize, Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, laptop };  
+export { sequelize, Sequelize, account, student, teacher, guest, laptop, board };  
