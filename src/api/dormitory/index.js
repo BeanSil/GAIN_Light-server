@@ -1,6 +1,6 @@
 import Router from 'koa-router';
 
-import { room } from './room';
+import room from './room';
 
 import {} from './point.ctrl';
 import {} from './request_song.ctrl';
