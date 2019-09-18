@@ -68,3 +68,9 @@ export const ApplyNextRoom = async (ctx) => {
         apply_id: result.apply_id
     }
 };
+
+export const UpdateNextRoom = async (ctx) => {
+    const Application = Joi.object().keys({
+        students: Joi.array().items(Joi.number().integer()).min(2).max(5).required()
+    });
+};

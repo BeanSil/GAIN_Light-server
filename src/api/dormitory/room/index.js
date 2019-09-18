@@ -1,8 +1,9 @@
 import Router from 'koa-router';
-import { ApplyNextRoom } from './room.ctrl';
+import { ApplyNextRoom, UpdateNextRoom } from './room.ctrl';
 
 const room = new Router();
 
-room.post('/', ApplyNextRoom);
+room.post('/apply', ApplyNextRoom);
+room.post('/apply/:apply_id', UpdateNextRoom);
 
 export default room;
