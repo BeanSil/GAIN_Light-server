@@ -1,4 +1,4 @@
-export const board_data = (sequelize, DataTypes) => {
+export const Board_data = (sequelize, DataTypes) => {
     return sequelize.define('board_data',{
         data_id : {
             type : DataTypes.INTEGER(5),
@@ -12,5 +12,5 @@ export const board_data = (sequelize, DataTypes) => {
             type : DataTypes.VARCHAR,
             allowNull : false
         }
-    })
-}
+    });
+};

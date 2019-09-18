@@ -1,5 +1,5 @@
-export const board_com_likability = (sequelize, DataTypes) => {
-    return sequelize.define(board_com_likability,{
+export const Suggestion_discussion = (sequelize, DataTypes) => {
+    return sequelize.define(suggestion_discussion,{
         discussion_id : {
             type : DataTypes.INTEGER,
             primaryKey : true,
@@ -22,5 +22,5 @@ export const board_com_likability = (sequelize, DataTypes) => {
             type : DataTypes.DATETIME,
             default : now()
         }
-    })
-}
+    });
+};

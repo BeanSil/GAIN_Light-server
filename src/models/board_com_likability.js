@@ -1,4 +1,4 @@
-export const board_com_likability = (sequelize, DataTypes) => {
+export const Board_com_likability = (sequelize, DataTypes) => {
     return sequelize.define(board_com_likability,{
         comment_id : {
             type : DataTypes.INTEGER,
@@ -14,5 +14,5 @@ export const board_com_likability = (sequelize, DataTypes) => {
             type : DataTypes.ENUM("좋아요","싫어요"),
             allowNull : false
         }
-    })
-}
+    });
+};

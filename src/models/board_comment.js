@@ -1,4 +1,4 @@
-export const board_comment = (sequelize, DataTypes) => {
+export const Board_comment = (sequelize, DataTypes) => {
     return sequelize.define('board_comment',{
         comment_id : {
             type : DataTypes.INTEGER(5),
@@ -26,6 +26,6 @@ export const board_comment = (sequelize, DataTypes) => {
         updated_at : {
             type : DataTypes.DATETIME,
             default : now()
-        },
-    })
-}
+        }
+    });
+};
