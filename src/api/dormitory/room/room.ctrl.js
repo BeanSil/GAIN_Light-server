@@ -44,7 +44,7 @@ export const ApplyNextRoom = async (ctx) => {
     });
     
     if (AppliedExist.length) {
-        console.log("ApplyNextRoom - 입력 데이터 에러 - 이미 존재");
+        console.log("ApplyNextRoom - 입력 데이터 에러 - 유저가 이미 존재");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
@@ -93,7 +93,7 @@ export const UpdateNextRoom = async (ctx) => {
         where: {
             [Op.and]: [
                 {
-                    apply_id: apply_id
+                    apply_id: ctx.params.apply_id
                 },
                 {
                     [Op.or]: [{
@@ -113,7 +113,7 @@ export const UpdateNextRoom = async (ctx) => {
     });
     
     if (AppliedExist.length > 1) {
-        console.log("ApplyNextRoom - 입력 데이터 에러 - 이미 존재");
+        console.log("ApplyNextRoom - 입력 데이터 에러 - 유저가 이미 존재");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
