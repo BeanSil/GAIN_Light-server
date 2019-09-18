@@ -43,7 +43,7 @@ export const RoomApply = (sequelize, DataTypes) => {
             type: DataTypes.TINYINT,
             allowNull: false
         },
-        user_id: {
+        user_id1: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -53,11 +53,11 @@ export const RoomApply = (sequelize, DataTypes) => {
         },
         user_id3: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         user_id4: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         user_id5: {
             type: DataTypes.INTEGER,
