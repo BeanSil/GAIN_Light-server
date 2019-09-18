@@ -1,5 +1,5 @@
 export const Room = (sequelize, DataTypes) => {
-    return sequelize.define("Rooms", {
+    return sequelize.define("room", {
         allocation_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -20,7 +20,7 @@ export const Room = (sequelize, DataTypes) => {
             default: false
         },
         year: {
-            type: DataTypes.YEAR,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         quarter: {
