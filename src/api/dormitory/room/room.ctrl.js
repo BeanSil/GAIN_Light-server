@@ -70,7 +70,22 @@ export const ApplyNextRoom = async (ctx) => {
 };
 
 export const UpdateNextRoom = async (ctx) => {
+    const Params = Joi.object().keys({
+       apply_id: Joi.string().number().required()
+    });
+    
     const Application = Joi.object().keys({
         students: Joi.array().items(Joi.number().integer()).min(2).max(5).required()
     });
+    
+    const validation = Joi.validate(ctx.request.body, Application) && Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("ApplyNextRoom - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
 };
