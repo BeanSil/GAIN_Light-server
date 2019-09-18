@@ -24,5 +24,5 @@ export const ApplyNextRoom = async (ctx) => {
         return;
     }
     
-    
+    const AppliedExist = await roomApply.findAll()
 };
