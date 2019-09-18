@@ -25,10 +25,12 @@ export const ApplyNextRoom = async (ctx) => {
         return;
     }
     
+    await roomApply.sync();
+    
     const AppliedExist = await roomApply.findAll({
         where: {
             [Op.or]: [{
-                user_id: ctx.request.body.students
+                user_id1: ctx.request.body.students
             }, {
                 user_id2: ctx.request.body.students
             }, {
@@ -41,12 +43,28 @@ export const ApplyNextRoom = async (ctx) => {
         }
     });
     
-    if (AppliedExist) {
+    if (AppliedExist.length) {
         console.log("ApplyNextRoom - 입력 데이터 에러 - 이미 존재");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
         };
         return;
+    }
+    
+    let query = {
+        length: ctx.request.body.students.length
+    };
+    let i = 1;
+    for (let index in ctx.request.body.students) {
+        query[`user_id${i}`] = ctx.request.body.students[index];
+        i++;
+    }
+    
+    let result = await roomApply.create(query);
+    
+    ctx.body = {
+        is_succeed: true,
+        apply_id: result.apply_id
     }
 };
