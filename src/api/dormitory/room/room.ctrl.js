@@ -10,13 +10,13 @@ dotenv.config();
 
 export const ApplyNextRoom = async (ctx) => {
     const Application = Joi.object().keys({
-        students: Joi.array().items(Joi.number().integer()).min(1).required()
-    })
+        students: Joi.array().items(Joi.number().integer()).min(2).max(5).required()
+    });
     
     const validation = Joi.validate(ctx.request.body, Application);
     
     if (validation.error) {
-        console.log("RegStudent - Joi 형식 에러");
+        console.log("ApplyNextRoom - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "002"
