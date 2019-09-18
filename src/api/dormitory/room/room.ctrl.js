@@ -88,4 +88,45 @@ export const UpdateNextRoom = async (ctx) => {
         };
         return;
     }
+    
+    const AppliedExist = await roomApply.findAll({
+        where: {
+            [Op.and]: [
+                {
+                    apply_id: apply_id
+                },
+                {
+                    [Op.or]: [{
+                        user_id1: ctx.request.body.students
+                    }, {
+                        user_id2: ctx.request.body.students
+                    }, {
+                        user_id3: ctx.request.body.students
+                    }, {
+                        user_id4: ctx.request.body.students
+                    }, {
+                        user_id5: ctx.request.body.students
+                    }]
+                }
+            ]
+        }
+    });
+    
+    if (AppliedExist.length > 1) {
+        console.log("ApplyNextRoom - 입력 데이터 에러 - 이미 존재");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    if (!AppliedExist.length) {
+        console.log("ApplyNextRoom - 입력 데이터 에러 - 대상이 존재하지 않음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "004"
+        };
+        return;
+    }
 };
