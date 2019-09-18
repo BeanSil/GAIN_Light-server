@@ -1,19 +1,19 @@
 export const Board = (sequelize, DataTypes) => {
-    return sequelize.define('board',{
+    return sequelize.define('board', {
         board_id : {
-            type : DataTypes.INTEGER(5),
+            type : DataTypes.INTEGER,
             primaryKey : true,
-            auto_increment : true
+            autoIncrement : true
         },
         user_id : {
-            type : DataTypes.INTEGER(30)   
+            type : DataTypes.INTEGER
         },
         kind : {
             type : DataTypes.ENUM("공지사항","자료실","일반게시판"),
             default : 3
         },
         title : {
-            type : DataTypes.VARCHAR,
+            type : DataTypes.STRING(255),
             allowNull : false
         },
         content : {
@@ -24,13 +24,15 @@ export const Board = (sequelize, DataTypes) => {
             type : DataTypes.BOOLEAN,
             default : false
         },
-        created_at : {
-            type : DataTypes.DATETIME,
-            default : now()
+        createdAt : {
+            type: DataTypes.DATE,
+            allowNull: false, 
+            defaultValue: DataTypes.NOW
         },
-        updated_at : {
-            type : DataTypes.DATETIME,
-            default : now()
-        },
-    })
-}
+        updatedAt : {
+            type: DataTypes.DATE,
+            allowNull: false, 
+            defaultValue: DataTypes.NOW
+        }
+    });
+};
