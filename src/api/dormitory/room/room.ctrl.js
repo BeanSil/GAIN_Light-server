@@ -129,4 +129,20 @@ export const UpdateNextRoom = async (ctx) => {
         };
         return;
     }
+    
+    let query = {
+        length: ctx.request.body.students.length
+    };
+    let i = 1;
+    for (let index in ctx.request.body.students) {
+        query[`user_id${i}`] = ctx.request.body.students[index];
+        i++;
+    }
+    
+    let result = await roomApply.update(query, { where: { apply_id: ctx.params.apply_id } });
+    
+    ctx.body = {
+        is_succeed: true,
+        apply_id: result.apply_id
+    }
 };
