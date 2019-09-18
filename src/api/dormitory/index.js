@@ -6,5 +6,4 @@ import {} from './self_study.ctrl';
 
 const dormitory = new Router();
 
-
 export default dormitory;
