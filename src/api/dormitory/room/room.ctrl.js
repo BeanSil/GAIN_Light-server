@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { Op } from 'sequelize'
+import {col, fn, Op} from 'sequelize'
 
 import { account, room, roomApply } from '../../../models';
 
@@ -147,7 +147,7 @@ export const UpdateNextRoom = async (ctx) => {
     }
 };
 
-export const SetRoom = (ctx) => {
+export const SetRoom = async (ctx) => {
     try {
         ctx.params.room_id = Number.parseInt(ctx.params.room_id);
     } catch (e) {
@@ -177,5 +177,17 @@ export const SetRoom = (ctx) => {
         return;
     }
     
+    let students = ctx.request.body.students;
+    let targetQuarter = new Date();
+    targetQuarter.setMonth(targetQuarter.getMonth() - 3);
+    let userExistData = await room.findAll({
+        attributes: ['room_no', [fn('count', '*')]],
+        group: 'room_no',
+        where: {
+            user_id: students,
+            year: targetQuarter.getFullYear(),
+            quarter: (targetQuarter.getMonth() + 1) / 3
+        }
+    });
     
 };
