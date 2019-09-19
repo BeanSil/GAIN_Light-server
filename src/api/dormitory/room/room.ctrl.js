@@ -180,14 +180,17 @@ export const SetRoom = async (ctx) => {
     }
     
     let students = ctx.request.body.students;
-    
     let referenceStudents = await roomApply.findAll({
         where: {
             apply_id: ctx.request.body.reference
         }
     });
     
-    console.log(referenceStudents);
+    referenceStudents.forEach(student => {
+        for (let i = 1; i <= student.length; i++) {
+            if (students.indexOf(student['user_id' + (i)]) === -1) students.push(student['user_id' + i])
+        }
+    });
     
     let targetQuarter = new Date();
     targetQuarter.setMonth(targetQuarter.getMonth() - 3);
