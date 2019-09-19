@@ -29,17 +29,11 @@ export const Lrnseat_recommend = (sequelize, DataTypes) => {
         },
         lrnseat_id: {
             type: DataTypes.INTEGER,
-            references: {
-                model: 'Lrnseats',
-                key: 'lrnseat_id'
-            }
+            allowNull: false
         },
         user_id: {
             type: DataTypes.INTEGER,
-            references: {
-                model: 'Accounts',
-                key: 'user_id'
-            }
+            allowNull: false
         },
         rental_time: {
             type: DataTypes.DATE,
@@ -58,10 +52,7 @@ export const Lrnseats = (sequelize, DataTypes) => {
         },
         lrnroom_id: {
             type: DataTypes.INTEGER,
-            references: {
-                model: 'Lrnrooms',
-                key: 'lrnroom_id'
-            }
+            allowNull: false
         },
         seat_number: {
             type: DataTypes.INTEGER,
