@@ -1,0 +1,196 @@
+import { lrnrooms, lrnseats, lrnseat_recommend } from "../../models"
+import { decodeToken } from "../../lib/token";
+import Joi from "joi"
+import { account } from "../../models";
+
+
+export const LrnReserve = async (ctx) =>{
+
+    //Joi 형식 검사
+    const Request = Joi.object().keys({
+        seat_id: Joi.number().required(),
+        laptop: Joi.boolean().required()
+    });
+
+    const Result = Joi.validate(ctx.request.body, Request);
+
+    if(Result.error){
+        console.log(`LrnReserve - Joi 형식 에러`);
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+    
+    //학생이 신청하는 것인가?
+    const user = await decodeToken(ctx.header.token);
+    
+    if(!user){
+        console.log(`LrnReserve - 존재하지 않는 유저입니다.`);
+
+        ctx.request = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+    console.log(user.user_id);
+    
+    const student = await account.findOne({
+        where:{
+            user_id: user.user_id
+        }
+    });
+
+    if(student.auth != '학생'){
+        console.log(`LrnReserve - 학생이 아닙니다.`);
+        ctx.request = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+
+    //이미 신청한 사람인가?
+    const reserved = await lrnseat_recommend.findOne({
+        where: {
+            user_id: user.user_id
+        }
+    });
+
+    if (reserved) {
+        console.log(`LrnReserve - 이미 대여한 유저입니다. 대여 요청한 유저: ${ctx.request.body.user_id}`);
+
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
+
+    //신청된 좌석인가?
+    const reservedSeat = await lrnseat_recommend.findOne({
+        where:{
+            lrnseat_id: ctx.request.body.seat_id
+        }
+    });
+
+    if(reserved){
+        console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석 : ${ctx.request.body.seat_id}`);
+
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+    
+    
+    //신청 불가능한 실은 아닌가?
+    // const possibleSeat = await lrnseats.findOne({
+    //     where: {
+    //         lrnseat_id: ctx.request.body.seat_id
+    //     }
+    // });
+
+    // if(possibleSeat == null){
+    //     console.log(`LrnReserve - 존재하지 않는 자리입니다.`)
+
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error" : "some errorcode"
+    //     }
+    //     return;
+    // }
+
+    // const possibleRoom = await lrnrooms.findOne({
+    //     where: {
+    //         lrnroom_id : possibleSeat.lrnroom_id
+    //     }
+    // })
+
+    // if(possibleRoom.object != "something"){
+    //     console.log(`LrnReserve - 예약 불가능한 학습실 입니다.`);
+
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error" : "some errorcode"
+    //     }
+    // }
+    
+    //현재 신청 가능한 시간인가?
+    // const currentTime = new Date();
+
+    // console.log(currentTime.getHours());
+
+    
+
+    //신청
+    await lrnseat_recommend.create({
+        "lrnseat_id" : ctx.request.body.seat_id,
+        "user_id" : user.user_id,
+    });
+
+    console.log(`LrnReserve - 예약이 완료되었습니다. 자리번호 : ${seat_id}`)
+
+    ctx.status = 200;
+    ctx.body = {
+        "user_id" : user.user_id
+    }
+}
+
+export const LrnList = async (ctx) => {
+    //로그인 한 유저는 누구인가?
+    const user = decodeToken(ctx.header.token);
+
+    if (!user) {
+        console.log(`LrnList - 존재하지 않는 유저입니다.`);
+        ctx.request = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
+
+    //대여된 좌석 불러오기
+
+    //로그인 한 유저가 대여 하였는가?
+    const reserved = await lrnseat_recommend.findAll({
+        where: {
+            user_id: user.user_id
+        }
+    });
+    
+    const seat_id = 0;
+    
+    // if (reserved.length) {
+    //     seat_id = reserved.lrnseat_id;
+    // }
+
+    ctx.request = 200;
+    ctx.body = {
+        "user_seat_id" : seat_id,
+
+    }
+}
+
+export const LrnCancel = async (ctx) =>{
+    //취소하는 사람과 대여한 사람이 일치하는가?
+    const reqUser = decodeToken(ctx.header.token);
+
+    if (reqUser.user_id != ctx.query.seat_id){
+        console.log(`LrnCancel - 요청한 유저와 취소할 유저가 일치하지 않습니다.`);
+
+        ctx.request = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+
+
+    //취소 가능한 시간인가?
+
+    //seat_user 테이블에서 정보 지우기
+}
