@@ -1,21 +1,18 @@
 export const Guest = (sequelize, DataTypes) => {
-    return sequelize.define('guest', {
-        user_id : {
-            type : DataTypes.INTEGER,
-            primaryKey : true
+    return sequelize.define('Guest', {
+        userCode : {
+            type : DataTypes.STRING(5),
+            primaryKey : true,
+            allowNull : false
         },
         name : {
             type : DataTypes.STRING(50),
             allowNull : false
         },
-        phone : {
-            type : DataTypes.STRING(11),
+        email : {
+            type : DataTypes.STRING,
             allowNull : false,
             unique : true
-        },
-        expiry_date : {
-            type : DataTypes.DATE,
-            allowNull : false
         }
     });
 };

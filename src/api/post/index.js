@@ -1,10 +1,7 @@
 import Router from 'koa-router';
 
-import {uploadBoard} from './post.ctrl';
-import auth from '../auth';
+import {} from './post.ctrl';
 
 const post = new Router();
-
-post.post('/board',uploadBoard);
 
 export default post;

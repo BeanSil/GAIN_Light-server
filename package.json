@@ -15,8 +15,6 @@
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "mariadb": "^2.0.4",
-    "moment": "^2.24.0",
-    "moment-timezone": "^0.5.26",
     "mongoose": "^5.5.0",
     "mysql": "^2.17.1",
     "node-school-kr": "^2.1.1",

@@ -1,23 +1,24 @@
 export const Student = (sequelize, DataTypes) => {
-    return sequelize.define('student', {
-        user_id : {
-            type : DataTypes.INTEGER,
-            primaryKey : true
-        },
-        name : {
-            type : DataTypes.STRING(20),
+    return sequelize.define('Student', {
+        userCode : {
+            type : DataTypes.STRING(5),
+            primaryKey : true,
             allowNull : false
         },
         grade : {
-            type : DataTypes.INTEGER,
+            type : DataTypes.STRING(1),
             allowNull : false
         },
         class : {
-            type : DataTypes.INTEGER,
+            type : DataTypes.STRING(1),
             allowNull : false
         },
         number : {
-            type : DataTypes.INTEGER,
+            type : DataTypes.STRING(2),
+            allowNull : false
+        },
+        name : {
+            type : DataTypes.STRING(50),
             allowNull : false
         },
         phone : {
@@ -25,10 +26,18 @@ export const Student = (sequelize, DataTypes) => {
             allowNull : false,
             unique : true
         },
-        point : {
+        email : {
+            type : DataTypes.STRING,
+            allowNull : false,
+            unique : true
+        },
+        greenpoint : {
             type : DataTypes.INTEGER,
             allowNull : false,
-            defaultValue : 0
+        },
+        redpoint : {
+            type : DataTypes.INTEGER,
+            allowNull : false
         }
     });
 };

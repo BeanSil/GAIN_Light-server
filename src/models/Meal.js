@@ -1,22 +1,23 @@
-export const Account = (sequelize, DataTypes) => {
-    return sequelize.define('Account', {
+export const Meal = (sequelize, DataTypes) => {
+    return sequelize.define('Meal', {
         userCode : {
             type : DataTypes.STRING(5),
             primaryKey : true,
             allowNull : false
         },
-        id : {
+        name : {
             type : DataTypes.STRING(50),
+            allowNull : false
+        },
+        phone : {
+            type : DataTypes.STRING(11),
             allowNull : false,
             unique : true
         },
-        password : {
+        email : {
             type : DataTypes.STRING,
-            allowNull : false
-        },
-        auth : {
-            type : DataTypes.INTEGER,
-            allowNull : false
+            allowNull : false,
+            unique : true
         }
     });
 };
