@@ -22,4 +22,4 @@ const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
 const board = Board(sequelize, Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, board };  
+export { sequelize, Sequelize, account, student, teacher, guest, board };
