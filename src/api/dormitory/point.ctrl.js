@@ -11,7 +11,7 @@ api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테�
             giver_id,receiver_id,kind,amount,reason_id,detail
         });
 
-        let pastPoint=await Student.findOne({ //상벌점을 받은 학생의 총 합계 조회
+        let pastPoint=await Student.findAll({ //상벌점을 받은 학생의 총 합계 조회
             where:{
                 user_id:receiver_id
             },
@@ -29,8 +29,36 @@ api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테�
     }catch(error){
         console.error(error);
         return next(error);
+    } 
+});
+
+api.get('/dormitory/allpoint',async(ctx,next)=>{ //상벌점 전체 조회-관리자
+    try{
+        const allStudentPoint=await points.findAll();
+        ctx.body=allStudentPoint;
+    }catch(error){
+        console.error(error);
+        return next(error);
     }
-    
-})
+});
+
+api.get('/dormitory/individualpoint/:id',async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
+    const StudentId=ctx.params;  //프론트에서 user_id를 보내야 한다!
+    try{
+        const Studentallstatus=await points.findAll({  //해당 user_id의 학생이 받은 상벌점 현황 싹다 뽑기
+            where:{
+                receiver_id:StudentId
+            }
+        });
+        ctx.body=Studentallstatus;
+    }catch(error){
+        console.error(error);
+        return next(error);
+    }
+});
+
+api.put('/dormitory/point',async(ctx,next)=>{  // 상벌점 수정 
+
+});
 
 module.exports=api;
