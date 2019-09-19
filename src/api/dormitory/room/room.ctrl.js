@@ -143,6 +143,6 @@ export const UpdateNextRoom = async (ctx) => {
     
     ctx.body = {
         is_succeed: true,
-        apply_id: result.apply_id
+        apply_id: AppliedExist.apply_id
     }
 };
