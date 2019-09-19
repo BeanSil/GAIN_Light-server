@@ -1,7 +1,8 @@
 import Router from 'koa-router';
-
-import {} from './rest.ctrl';
+import {test} from './rest.ctrl';
 
 const rest = new Router();
+
+rest.get('/test', test);
 
 export default rest;

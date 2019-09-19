@@ -1,6 +1,5 @@
 import Router from 'koa-router';
 
-
 import auth from './auth';
 import school from './school';
 import post from './post';
