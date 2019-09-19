@@ -146,3 +146,36 @@ export const UpdateNextRoom = async (ctx) => {
         apply_id: AppliedExist[0].apply_id
     }
 };
+
+export const SetRoom = (ctx) => {
+    try {
+        ctx.params.room_id = Number.parseInt(ctx.params.room_id);
+    } catch (e) {
+        console.log("ApplyNextRoom - 기타 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002-1"
+        };
+        return;
+    }
+    
+    const Params = Joi.alternatives.try(Joi.number().integer().min(301).max(320), Joi.number().integer().min(401).max(421), Joi.number().integer().min(501).max(521));
+    
+    const Setter = Joi.object().keys({
+        reference: Joi.array().items(Joi.number().integer()),
+        students: Joi.array().items(Joi.number().integer())
+    });
+    
+    const validation = Joi.validate(ctx.params.room_id, Params) && Joi.validate(ctx.request.body, Setter)
+    
+    if (validation.error) {
+        console.log("ApplyNextRoom - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    
+};
