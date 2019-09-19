@@ -162,11 +162,11 @@ export const SetRoom = (ctx) => {
     const Params = Joi.alternatives.try(Joi.number().integer().min(301).max(320), Joi.number().integer().min(401).max(421), Joi.number().integer().min(501).max(521));
     
     const Setter = Joi.object().keys({
-        reference: Joi.array().items(Joi.number().integer()),
-        students: Joi.array().items(Joi.number().integer())
+        reference: Joi.array().items(Joi.number().integer()).max(2),
+        students: Joi.array().items(Joi.number().integer()).max(5)
     });
     
-    const validation = Joi.validate(ctx.params.room_id, Params) && Joi.validate(ctx.request.body, Setter)
+    const validation = Joi.validate(ctx.params.room_id, Params) && Joi.validate(ctx.request.body, Setter);
     
     if (validation.error) {
         console.log("ApplyNextRoom - Joi 형식 에러");
