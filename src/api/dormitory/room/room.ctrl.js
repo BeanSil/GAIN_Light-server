@@ -139,10 +139,10 @@ export const UpdateNextRoom = async (ctx) => {
         i++;
     }
     
-    let result = await roomApply.update(query, { where: { apply_id: ctx.params.apply_id } });
+    await roomApply.update(query, { where: { apply_id: ctx.params.apply_id } });
     
     ctx.body = {
         is_succeed: true,
-        apply_id: AppliedExist.apply_id
+        apply_id: AppliedExist[0].apply_id
     }
 };
