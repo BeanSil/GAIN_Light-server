@@ -192,6 +192,15 @@ export const SetRoom = async (ctx) => {
         }
     });
     
+    if (students.legnth >= 4 && students.legnth <= 5) {
+        console.log("SetRoom - 신청자 너무 많음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
     let targetQuarter = new Date();
     targetQuarter.setMonth(targetQuarter.getMonth() - 3);
     let userExistData = await room.findAll({
@@ -209,7 +218,7 @@ export const SetRoom = async (ctx) => {
             console.log("SetRoom - 규정 위반 에러");
             ctx.status = 400;
             ctx.body = {
-                "error" : "003"
+                "error" : "004"
             };
             return;
         }
