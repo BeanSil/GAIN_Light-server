@@ -181,7 +181,7 @@ export const SetRoom = async (ctx) => {
     let targetQuarter = new Date();
     targetQuarter.setMonth(targetQuarter.getMonth() - 3);
     let userExistData = await room.findAll({
-        attributes: ['room_no', [fn('count', '*')]],
+        attributes: ['room_no', [fn('count', col('*')), 'count']],
         group: 'room_no',
         where: {
             user_id: students,
@@ -189,5 +189,17 @@ export const SetRoom = async (ctx) => {
             quarter: (targetQuarter.getMonth() + 1) / 3
         }
     });
+    
+    for (let i in userExistData) {
+        if (userExistData[0].dataValues.count > 2) {
+            console.log("SetRoom - 규정 위반 에러");
+            ctx.status = 400;
+            ctx.body = {
+                "error" : "003"
+            };
+            return;
+        }
+    }
+    
     
 };

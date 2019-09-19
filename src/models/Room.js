@@ -7,8 +7,7 @@ export const Room = (sequelize, DataTypes) => {
         },
         room_no: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true
+            allowNull: false
         },
         user_id: {
             type: DataTypes.INTEGER,
@@ -17,7 +16,7 @@ export const Room = (sequelize, DataTypes) => {
         is_banned: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
-            default: false
+            default: 0
         },
         year: {
             type: DataTypes.INTEGER,
