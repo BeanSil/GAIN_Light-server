@@ -71,7 +71,7 @@ export const ApplyNextRoom = async (ctx) => {
 
 export const UpdateNextRoom = async (ctx) => {
     const Params = Joi.object().keys({
-       apply_id: Joi.string().alphanum().required() // TODO: 숫자만 걸러내는 방법 찾아야 함
+       apply_id: Joi.string().regex(/^\d+$/).required()
     });
     
     const Application = Joi.object().keys({
