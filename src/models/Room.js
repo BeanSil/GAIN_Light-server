@@ -14,8 +14,7 @@ export const Room = (sequelize, DataTypes) => {
             allowNull: false
         },
         is_banned: {
-            type: DataTypes.BOOLEAN,
-            allowNull: false,
+            type: DataTypes.TINYINT,
             default: 0
         },
         year: {
