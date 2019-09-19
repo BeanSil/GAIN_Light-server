@@ -19,7 +19,5 @@ const account = Account(sequelize, Sequelize);
 const student = Student(sequelize, Sequelize);
 const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
-const room = Room(sequelize, Sequelize);
-const roomApply = RoomApply(sequelize, Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, room, roomApply };
+export { sequelize, Sequelize, account, student, teacher, guest };
