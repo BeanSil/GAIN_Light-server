@@ -1,12 +1,35 @@
 import Router from 'koa-router';
 import Joi from 'joi';
-import { generateToken, decodeToken } from '../../lib/token';
+import {decodeToken} from '../../lib/token';
 import {points,Student} from '../../models';
 
 const api= new Router();
 
 api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
+
+    const Request = Joi.object().keys({
+        giver_id:Joi.integer().required(),
+        receiver_id:Joi.integer().required(),
+        kind:Joi.required(),
+        amount:Joi.number().integer().required(),
+        reason_id:Joi.integer().required(),
+        detail:Joi.string().min(2).max(200).required(),
+    });
+
+    // 넘어온 body의 형식을 검사한다.
+    const Result = Joi.validate(ctx.request.body, Request);
+
+    // 만약 형식이 불일치한다면, 그 이후 문장도 실행하지 않는다.
+    if(Result.error) {
+        console.log(`/dormitory/point - Joi 형식 에러`);
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        }
+        return;
+    }
     const {giver_id,receiver_id,kind,amount,reason_id,detail}=ctx.request.body;
+
     try{
         await points.create({  //db에 추가
             giver_id,receiver_id,kind,amount,reason_id,detail
@@ -61,6 +84,29 @@ api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조�
 });
 
 api.put('/dormitory/point/:id',async(ctx,next)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
+
+    const Request = Joi.object().keys({
+        giver_id:Joi.integer().required(),
+        receiver_id:Joi.integer().required(),
+        kind:Joi.required(),
+        amount:Joi.number().integer().required(),
+        reason_id:Joi.integer().required(),
+        detail:Joi.string().min(2).max(200).required(),
+    });
+
+    // 넘어온 body의 형식을 검사한다.
+    const Result = Joi.validate(ctx.request.body, Request);
+
+    // 만약 형식이 불일치한다면, 그 이후 문장도 실행하지 않는다.
+    if(Result.error) {
+        console.log(`/dormitory/point/:id - Joi 형식 에러`);
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        }
+        return;
+    }
+
     const {id}=ctx.params;
     const {giver_id,receiver_id,kind,amount,reason_id,detail}=ctx.request.body;
     try{
