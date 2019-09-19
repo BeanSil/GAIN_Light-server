@@ -214,7 +214,7 @@ export const SetRoom = async (ctx) => {
             return;
         }
     }
-    let promises = []
+    let promises = [];
     students.forEach(student => {
        promises.push(room.create({
            room_no: ctx.params.room_id,
@@ -225,11 +225,13 @@ export const SetRoom = async (ctx) => {
     });
     
     let result = await Promise.all(promises);
-    
-    console.log(result);
+    let output = [];
+    result.forEach(res => {
+        output.push(res.allocation_id)
+    });
     
     ctx.body = {
         is_succeed: true,
-        //apply_id: AppliedExist[0].apply_id
+        allocation_ids: output
     }
 };
