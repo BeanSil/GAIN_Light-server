@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { user, board } from '../../models';
+import { user, board,account } from '../../models';
 import { generateToken, decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
@@ -39,25 +39,37 @@ export const uploadBoard = async (ctx) => {
                 "user_id" : decoded.user_id
             }
         });
-    
-        if(founded.auth != 2 || founded.auth != "관리자"){
+    console.log(founded.auth)
+        if(founded.auth == "학생" || founded.auth == "게스트"){
             console.log("관리자 게시판 작성 에러")
             ctx.status = 400;
             ctx.body = {
                 "error" : "001"
             }
-            return;
+            return; 
         }
-        return;
+        await board.create({
+            "user_id" : decoded.user_id,
+            "title" : ctx.request.body.title,
+            "content" : ctx.request.body.content,
+            "is_anonymous" : ctx.request.body.is_anonymous,
+            "kind" : ctx.request.body.kind
+        });
+    
+        ctx.body = "success";
     }
+    else{
+        await board.create({
+            "user_id" : decoded.user_id,
+            "title" : ctx.request.body.title,
+            "content" : ctx.request.body.content,
+            "is_anonymous" : ctx.request.body.is_anonymous,
+            "kind" : ctx.request.body.kind
+        });
+    
+        ctx.body = "success";
+    }
+    
 
-    await board.create({
-        "user_id" : decoded.user_id,
-        "title" : ctx.request.body.title,
-        "content" : ctx.request.body.content,
-        "is_anonymous" : ctx.request.body.is_anonymous,
-        "kind" : ctx.request.body.kind
-    });
-
-    ctx.body = "success";
+    
 }
