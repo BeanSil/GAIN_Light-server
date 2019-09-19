@@ -3,12 +3,12 @@ export const Sleepover_Applys = (sequelize, DataTypes) => {
     apply_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      allowNull : false
+      autoIncrement : true
     },
     user_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      allowNull : false
+      autoIncrement : true
     },
     created_at : {
       type : DataTypes.Datetime,

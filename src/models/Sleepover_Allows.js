@@ -3,7 +3,7 @@ export const Sleepover_Allows = (sequelize, DataTypes) => {
     user_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      allowNull : false
+      autoIncrement : true
     },
     place : {
       type : DataTypes.STRING.BINARY
