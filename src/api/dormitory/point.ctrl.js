@@ -49,6 +49,7 @@ api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테�
             },
             point:currentPoint
         });
+        ctx.status(200);
 
     }catch(error){
         console.error(error);
@@ -59,6 +60,7 @@ api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테�
 api.get('/dormitory/allpoint',async(ctx,next)=>{ //상벌점 전체 조회-관리자 , 관리자용!
     try{
         const allStudentPoint=await points.findAll();
+        ctx.status(200);
         ctx.body=allStudentPoint;
     }catch(error){
         console.error(error);
@@ -76,6 +78,8 @@ api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조�
                 receiver_id:StudentId
             }
         });
+        
+        ctx.status(200);
         ctx.body=Studentallstatus;
     }catch(error){
         console.error(error);
@@ -84,7 +88,6 @@ api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조�
 });
 
 api.put('/dormitory/point/:id',async(ctx,next)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
-
     const Request = Joi.object().keys({
         giver_id:Joi.integer().required(),
         receiver_id:Joi.integer().required(),
@@ -136,7 +139,7 @@ api.put('/dormitory/point/:id',async(ctx,next)=>{  // 상벌점 수정 + student
             },
             point:StudentpastPoint-pastPoint+amount //지금까지 누적된 점수 - 잘못 저장됬던 점수 + 바른점수
         });
-
+        ctx.status(200);
     }catch(error){
         console.error(error);
         next(error);
@@ -174,7 +177,7 @@ api.delete('/dormitory/point/:id',async(ctx,next)=>{ //상벌점 삭제 + studen
             },
             point:StudentpastPoint-columeInformation.amount //누적 점수-삭제할 점수
         });
-
+        ctx.status(200);
         
     }catch(error){
         console.error(error);
