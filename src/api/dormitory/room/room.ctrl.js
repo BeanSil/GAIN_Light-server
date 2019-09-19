@@ -151,7 +151,7 @@ export const SetRoom = async (ctx) => {
     try {
         ctx.params.room_id = Number.parseInt(ctx.params.room_id);
     } catch (e) {
-        console.log("ApplyNextRoom - 기타 형식 에러");
+        console.log("SetRoom - 기타 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "002-1"
@@ -159,17 +159,19 @@ export const SetRoom = async (ctx) => {
         return;
     }
     
-    const Params = Joi.alternatives.try(Joi.number().integer().min(301).max(320), Joi.number().integer().min(401).max(421), Joi.number().integer().min(501).max(521));
-    
-    const Setter = Joi.object().keys({
-        reference: Joi.array().items(Joi.number().integer()).max(2),
-        students: Joi.array().items(Joi.number().integer()).max(5)
+    const Params = Joi.object().keys({
+        room_id: Joi.alternatives().try(Joi.number().integer().min(301).max(320).required(), Joi.number().integer().min(401).max(421).required(), Joi.number().integer().min(501).max(521).required())
     });
     
-    const validation = Joi.validate(ctx.params.room_id, Params) && Joi.validate(ctx.request.body, Setter);
+    const Setter = Joi.object().keys({
+        reference: Joi.array().items(Joi.number().integer()).max(2).required(),
+        students: Joi.array().items(Joi.number().integer()).max(5).required()
+    });
+    
+    const validation = Joi.validate(ctx.params, Params) && Joi.validate(ctx.request.body, Setter);
     
     if (validation.error) {
-        console.log("ApplyNextRoom - Joi 형식 에러");
+        console.log("SetRoom - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "002"
@@ -178,6 +180,15 @@ export const SetRoom = async (ctx) => {
     }
     
     let students = ctx.request.body.students;
+    
+    let referenceStudents = await roomApply.findAll({
+        where: {
+            apply_id: ctx.request.body.reference
+        }
+    });
+    
+    console.log(referenceStudents);
+    
     let targetQuarter = new Date();
     targetQuarter.setMonth(targetQuarter.getMonth() - 3);
     let userExistData = await room.findAll({
