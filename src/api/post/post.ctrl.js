@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import crypto from 'crypto';
 import { user, board } from '../../models';
 import { generateToken, decodeToken }from '../../lib/token.js';
 
@@ -10,6 +9,7 @@ dotenv.config();
 export const uploadBoard = async (ctx) => {
 
     const UploadPost = Joi.object().keys({
+        user_id : Joi.number().required(),
         title : Joi.string().max(255).required(),
         content : Joi.string().max(65535).required(),
         is_anonymous : Joi.boolean(),
@@ -28,7 +28,6 @@ export const uploadBoard = async (ctx) => {
         }
         return;
     }
-
     
     const token = ctx.header.token;
 
@@ -41,7 +40,7 @@ export const uploadBoard = async (ctx) => {
             }
         });
     
-        if(founded == null){
+        if(founded.auth != 2 || founded.auth != "관리자"){
             console.log("관리자 게시판 작성 에러")
             ctx.status = 400;
             ctx.body = {
@@ -51,8 +50,9 @@ export const uploadBoard = async (ctx) => {
         }
         return;
     }
-    
+
     await board.create({
+        "user_id" : decoded.user_id,
         "title" : ctx.request.body.title,
         "content" : ctx.request.body.content,
         "is_anonymous" : ctx.request.body.is_anonymous,
