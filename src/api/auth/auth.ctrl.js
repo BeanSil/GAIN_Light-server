@@ -296,14 +296,25 @@ export const Login = async (ctx) => {
     }
 
     // 데이터베이스에 해당하는 아이디가 있는지 검사합니다.
-    const founded = await account.findAll({
+    const founded = await account.findOne({
         where: {
             id : ctx.request.body.id
         }
     });
 
-    if(!founded.length){
+    if(founded == null){
         console.log(`Login - 존재하지 않는 계정입니다. / 입력된 아이디 : ${ctx.request.body.id}`);
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        }
+        return;
+    }
+
+    const input = crypto.createHmac('sha256', process.env.Password_KEY).update(ctx.request.body.password).digest('hex');
+
+    if(founded.password != input){
+        console.log(`Login - 비밀번호를 틀렸습니다.`);
         ctx.status = 400;
         ctx.body = {
             "error" : "004"
@@ -311,21 +322,8 @@ export const Login = async (ctx) => {
         return;
     }
 
-    const input = crypto.createHmac('sha256', process.env.Password_KEY).update(ctx.request.body.password).digest('hex');
-
-    if(founded[0].password != input){
-        console.log(`Login - 비밀번호를 틀렸습니다.`);
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "005"
-        }
-        return;
-    }
-
     const payload = {
-        id : founded[0].id,
-        userCode : founded[0].userCode,
-        auth : founded[0].auth
+        user_id : founded.user_id
     };
 
     let token = null;
