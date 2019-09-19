@@ -43,21 +43,6 @@ api.get('/dormitory/allpoint',async(ctx,next)=>{ //상벌점 전체 조회-관�
     }
 });
 
-// api.get('/dormitory/individualpoint/:id',async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
-//     const StudentId=ctx.params;  //프론트에서 user_id를 보내야 한다!
-//     try{
-//         const Studentallstatus=await points.findAll({  //해당 user_id의 학생이 받은 상벌점 현황 싹다 뽑기
-//             where:{
-//                 receiver_id:StudentId
-//             }
-//         });
-//         ctx.body=Studentallstatus;
-//     }catch(error){
-//         console.error(error);
-//         return next(error);
-//     }
-// });
-
 api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
@@ -117,11 +102,34 @@ api.delete('/dormitory/point/:id',async(ctx,next)=>{ //상벌점 삭제 + studen
     const {id}=ctx.params;
 
     try{
-        await points.delete({
+        const columeInformation=await points.findAll({ //삭제할 칼럼에서 상벌점 점수랑 유저 id 받아온다.
+            where:{
+                point_id:id
+            },
+            attributes:["amount","receiver_id"]
+        });
+
+        await points.delete({  //삭제한다.
             where:{
                 point_id:id
             }
         });
+
+        const StudentpastPoint=await Student.findAll({ //student테이블 에서 지금까지 누적된 상벌점 점수
+            where:{
+                user_id:columeInformation.receiver_id
+            },
+            attributes:["point"]
+        });
+
+        await Student.update({ //삭제된 점수를 빼고 갱신한다.
+            where:{
+                user_id:columeInformation.receiver_id
+            },
+            point:StudentpastPoint-columeInformation.amount //누적 점수-삭제할 점수
+        });
+
+        
     }catch(error){
         console.error(error);
         next(error);
