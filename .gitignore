@@ -172,3 +172,4 @@ fabric.properties
 
 src/config/dbconfig.json
 package-lock.json
+src/api/rest/think.txt

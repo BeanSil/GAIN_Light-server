@@ -1,5 +1,5 @@
 export const Sleepover_Sleepouts = (sequelize, DataTypes) => {
-  return sequelize.define('Sleepover_Sleepouts', {
+  return sequelize.define('sleepover_sleepout', {
     sleepout_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,

@@ -1,5 +1,5 @@
 export const Sleepover_Goouts = (sequelize, DataTypes) => {
-  return sequelize.define('Sleepover_Goouts', {
+  return sequelize.define('sleepover_goout', {
     goout_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
