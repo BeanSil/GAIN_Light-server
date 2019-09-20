@@ -212,6 +212,53 @@ export const GetApplication = async (ctx) => {
     };
 };
 
+export const GetApplicationByUserId = async (ctx) => {
+    if (ctx.request.user.authority < 2) {
+        console.log("GetApplicationByUserId - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    const Params = Joi.object().keys({
+        user_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const validation = Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("GetApplicationByUserId - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    const apply = await roomApply.findOne({
+        where: {
+            [Op.or]: [{
+                user_id1: ctx.request.body.students
+            }, {
+                user_id2: ctx.request.body.students
+            }, {
+                user_id3: ctx.request.body.students
+            }, {
+                user_id4: ctx.request.body.students
+            }, {
+                user_id5: ctx.request.body.students
+            }]
+        }
+    });
+    
+    ctx.body = {
+        is_succeed: true,
+        data: apply
+    };
+};
+
 export const SetRoom = async (ctx) => {
     if (ctx.request.user.authority !== 3) {
         console.log("SetRoom - 권한 오류");
