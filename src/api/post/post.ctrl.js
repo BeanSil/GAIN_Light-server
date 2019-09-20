@@ -136,3 +136,9 @@ export const getBoard = async (ctx) => {
     }
 
 }
+
+export const getComment = async (ctx) => {
+
+    
+}
+

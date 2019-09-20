@@ -10,4 +10,7 @@ const post = new Router();
 post.post('/board',uploadBoard);
 post.post('/comment',uploadcomment);
 
-export default post;post.get('/getboard',getBoard);
+post.get('/getboard',getBoard);
+
+
+export default post;

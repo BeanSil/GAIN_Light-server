@@ -12,7 +12,8 @@ export const Board_comment = (sequelize, DataTypes) => {
             type : DataTypes.INTEGER
         },
         parent_id : {
-            type : DataTypes.INTEGER
+            type : DataTypes.INTEGER,
+            default : null
         },
         content : {
             type : DataTypes.TEXT,
