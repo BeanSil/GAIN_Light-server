@@ -1,4 +1,4 @@
-export const points = (sequelize, DataTypes) => {
+export const Points = (sequelize, DataTypes) => {
     return sequelize.define('points', {
         point_id:{
             type: DataTypes.INTEGER,
@@ -13,7 +13,7 @@ export const points = (sequelize, DataTypes) => {
             type:DataTypes.INTEGER
         },
         kind:{
-            type:ENUM('상점','벌점'),
+            type:DataTypes.INTEGER,
             allowNull:false
         },
         amount:{
@@ -21,7 +21,7 @@ export const points = (sequelize, DataTypes) => {
             allowNull:false
         },
         reason_id:{
-            type:DataTypes.INTEGER,
+            type:DataTypes.ENUM('상점','벌점'),
             primaryKey:true
         },
         detail:{

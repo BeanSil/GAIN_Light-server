@@ -21,9 +21,7 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
     if(Result.error) {  
         console.log(`/dormitory/point - Joi 형식 에러`);
         ctx.status = 400;
-        ctx.body = {
-            "error" : "001"
-        }
+        ctx.body = "형식에러!";
         return;
     }
     const { giver_id,receiver_id,kind,amount,reason_id,detail } = ctx.request.body;
@@ -44,9 +42,9 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
             }
         });
 
-        if(kind=="상점"){
+        if(kind==="상점"){
             const currentPoint = StudentObject.point+amount; 
-        }else if(kind=="벌점"){
+        }else if(kind==="벌점"){
             const currentPoint = StudentObject.point-amount;
         }else{
             ctx.body="이상한 값이 들어왔다구웃!";
@@ -81,7 +79,7 @@ export const ALLPOINT=async(ctx)=>{ //상벌점 전체 조회-관리자 , 관리
 };
 
 
-export const INDIVIDUALPOINT=async(ctx)=>{  //상벌점 본인 조회-로그인한 본인
+export const INDIVIDUALPOINT=async ctx=>{  //상벌점 본인 조회-로그인한 본인
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
     const StudentId=decoded.user_id; //토큰에서 로그인한 학생의 user_id 가져오기

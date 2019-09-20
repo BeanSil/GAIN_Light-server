@@ -1,4 +1,4 @@
-export const pointReasons = (sequelize, DataTypes) => {
+export const PointReasons = (sequelize, DataTypes) => {
     return sequelize.define('pointReasons', {
         reasion_id:{
             type:DataTypes.INTEGER,
@@ -6,11 +6,11 @@ export const pointReasons = (sequelize, DataTypes) => {
             autoIncrement:true
         },
         kind:{
-            type:ENUM('상점','벌점'),
+            type:DataTypes.ENUM('상점','벌점'),
             allowNull:false
         },
         content:{
-            type:DataTypes.String(100),
+            type:DataTypes.STRING(200)
         }
     });
 };
