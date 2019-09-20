@@ -251,4 +251,10 @@ export const board_com_res = async (ctx) => {
 
     ctx.status = 200;
     ctx.body = "success";
-}
+};
+
+export const DeleteBoard = async (ctx) => {
+};
+
+export const DeleteComment = (ctx) => {
+};
