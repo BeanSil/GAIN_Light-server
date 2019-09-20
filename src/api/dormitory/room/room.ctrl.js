@@ -259,6 +259,48 @@ export const GetApplicationByUserId = async (ctx) => {
     };
 };
 
+export const DeleteApplication = async (ctx) => {
+    if (ctx.request.user.authority < 2) {
+        console.log("DeleteApplication - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    const Params = Joi.object().keys({
+        apply_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const validation = Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("DeleteApplication - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    let apply = await roomApply.destroy({where: {apply_id: ctx.params.apply_id}});
+    
+    if (!apply) {
+        console.log("DeleteApplication - 신청 내역 없음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true
+    };
+    
+};
+
 export const SetRoom = async (ctx) => {
     if (ctx.request.user.authority !== 3) {
         console.log("SetRoom - 권한 오류");
