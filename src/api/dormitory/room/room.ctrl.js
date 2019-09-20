@@ -223,6 +223,24 @@ export const SetRoom = async (ctx) => {
             return;
         }
     }
+    
+    let is_exist = await room.findAll({
+        where: {
+            user_id: students,
+            year: new Date().getFullYear(),
+            quarter: (new Date().getMonth() + 1) / 3
+        }
+    });
+    
+    if (is_exist.length) {
+        console.log("SetRoom - 유저 이미 등록됨");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "005"
+        };
+        return;
+    }
+    
     let promises = [];
     students.forEach(student => {
        promises.push(room.create({
