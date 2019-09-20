@@ -262,3 +262,22 @@ export const SetRoom = async (ctx) => {
         allocation_ids: output
     }
 };
+
+export const GetRooms = async (ctx) => {
+    let rooms = await room.findAll({
+        attributes: ['room_no', [fn('GROUP_CONCAT', col('user_id')), 'user_ids']], //'GROUP_CONCAT(allocation_id, user_id, is_banned)'],
+        group: "room_no",
+        where: {
+            year: new Date().getFullYear(),
+            quarter: (new Date().getMonth() + 1) / 3
+        }
+    });
+    
+    console.log(rooms);
+    
+    ctx.body = rooms;
+};
+
+export const GetRoom = async (ctx) => {
+
+};
