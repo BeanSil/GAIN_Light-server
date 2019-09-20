@@ -179,6 +179,39 @@ export const GetApplications = async (ctx) => {
     };
 };
 
+export const GetApplication = async (ctx) => {
+    if (ctx.request.user.authority < 2) {
+        console.log("GetApplication - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    const Params = Joi.object().keys({
+        apply_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const validation = Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("GetApplication - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    let apply = await roomApply.findOne({where: {apply_id: ctx.params.apply_id}});
+    
+    ctx.body = {
+        is_succeed: true,
+        data: apply
+    };
+};
+
 export const SetRoom = async (ctx) => {
     if (ctx.request.user.authority !== 3) {
         console.log("SetRoom - 권한 오류");
