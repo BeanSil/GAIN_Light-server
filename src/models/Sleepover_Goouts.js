@@ -3,12 +3,12 @@ export const Sleepover_Goouts = (sequelize, DataTypes) => {
     goout_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      autoIncrement : true
+      auto_increment : true
     },
     user_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      autoIncrement : true
+      auto_increment : true
     },
     start_time : {
       type : DataTypes.DATE,
@@ -27,7 +27,7 @@ export const Sleepover_Goouts = (sequelize, DataTypes) => {
     },
     created_at : {
       type : DataTypes.DATE,
-      default : now()
+      defalutValue : DataTypes.NOW
     }
   }); 
 }
