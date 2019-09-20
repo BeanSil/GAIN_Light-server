@@ -169,17 +169,24 @@ export const getBoard = async (ctx) => {
 
     const decoded = await decodeToken(token);
 
-    let soncomment = [];
+    let son=[];
+   
     for(var i in parentcomment){
-        soncomment.push({
-            "comment_id" : parentcomment[i].comment_id,
-            "user_id" : decoded.user_id,
-            "content" : parentcomment[i].content,
-            "created_at" : parentcomment[i].created_at
-        })
+        parentcomment[i].dataValues.sons = []
+        const soncomment = await board_comment.findAll({
+            where : {
+                "parent_id" : parentcomment[i].comment_id
+            }
+        });
+
+
+        for (let j in soncomment) {
+            parentcomment[i].dataValues.sons.push(soncomment[j]);
+        }
     }
 
-    ctx.body = soncomment;
+    console.log(parentcomment);
+    ctx.body = parentcomment;
     // ctx.status = 200;
     // ctx.body = {
     //     "list" : needboard
