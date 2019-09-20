@@ -1,4 +1,4 @@
-import { lrnrooms, lrnseats, lrnseat_recommend, Sequelize, sequelize } from "../../models"
+import { lrnrooms, lrnseats, lrnseat_recommend } from "models"
 import { decodeToken } from "../../lib/token";
 import Joi from "joi"
 import { account } from "../../models";
@@ -24,17 +24,7 @@ export const LrnReserve = async (ctx) =>{
     }
     
     //학생이 신청하는 것인가?
-    try {
-        const user = await decodeToken(ctx.header.token);
-    } catch (error) {
-        console.log(`LrnReserve - 존재하지 않는 유저입니다.`);
-
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "some errorcode"
-        }
-        return;
-    }
+    const user = await decodeToken(ctx.header.token);  
     
     const student = await account.findOne({
         where:{
@@ -52,13 +42,13 @@ export const LrnReserve = async (ctx) =>{
     }
 
     //이미 신청한 사람인가?
-    const reserved = await lrnseat_recommend.findOne({
+    const reservedUser = await lrnseat_recommend.findOne({
         where: {
             user_id: user.user_id
         }
     });
 
-    if (reserved) {
+    if (reservedUser != null) {
         console.log(`LrnReserve - 이미 대여한 유저입니다. 대여 요청한 유저: ${user.user_id}`);
 
         ctx.status = 400;
@@ -75,7 +65,7 @@ export const LrnReserve = async (ctx) =>{
         }
     });
 
-    if(reservedSeat){
+    if(reservedSeat != null){
         console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석: ${ctx.request.body.seat_id}`);
 
         ctx.status = 400;
@@ -122,17 +112,18 @@ export const LrnReserve = async (ctx) =>{
     const currentTime = new Date();
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
-    // if(currentDay >= 5){
-    //     console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
+    const currnetMin = currentTime.getMinutes();
+    if(currentDay >= 5){
+        console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
 
-    //     ctx.status = 400;
-    //     ctx.body = {
-    //         "error" : "some errorcode"
-    //     }
-    //     return;
-    // }
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
 
-    if (currnetHour < 9 || currnetHour > 21){
+    if (currnetHour < 9 || (currnetHour >= 21 && currnetMin > 20)){
         console.log(`LrnReserve - 예약 불가능한 시간입니다.`)
         
         ctx.status = 400;
@@ -180,12 +171,14 @@ export const LrnList = async (ctx) => {
         }
     });
     
-    var record = new Object();
-    var seatArray = Array();
+
+    let seatArray = [];
 
     for(var i in list){
-        record.seat_id = list[i].lrnseat_id;
-        record.user_id = list[i].user_id;
+        const record = {
+            seat_id : list[i].lrnseat_id,
+            user_id : list[i].user_id
+        }
         seatArray.push(record);
     }
 
@@ -204,12 +197,13 @@ export const LrnList = async (ctx) => {
 
 
     //성공 시 반환
+    console.log(`LrnList - 대여 목록을 반환하였습니다.`)
+
     ctx.status = 200;
     ctx.body = {
         "user_seat_id" : seat_id,
         "seat" : seatArray
     }
-    console.log(`LrnList - 대여 목록을 반환하였습니다.`)
 }
 
 export const LrnCancel = async (ctx) =>{
@@ -220,14 +214,14 @@ export const LrnCancel = async (ctx) =>{
     const time = new Date();
     const today = `${time.getFullYear()}-${"0"+(time.getMonth()+1)}-${time.getDate()} 00:00:00`;
 
-    const reserved = await lrnseat_recommend.findOne({
+    const reservedSeat = await lrnseat_recommend.findOne({
         where :{
             lrnseat_id : seat_id,
             rental_time : today
         }
     });
 
-    if(reserved == null){
+    if(reservedSeat == null){
         console.log(`LrnCancel - 해당 자리는 예약되지 않았습니다. 자리 번호: ${ctx.query.seat_id}`);
         
         ctx.status = 400;
@@ -237,7 +231,7 @@ export const LrnCancel = async (ctx) =>{
         return;
     }
 
-    if (reqUser.user_id != reserved.user_id){
+    if (reqUser.user_id != reservedSeat.user_id){
         console.log(`LrnCancel - 요청한 유저와 취소할 유저가 일치하지 않습니다.`);
 
         ctx.status = 400;
@@ -251,17 +245,18 @@ export const LrnCancel = async (ctx) =>{
     const currentTime = new Date();
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
-    // if (currentDay >= 5) {
-    //     console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
+    const currnetMin = currentTime.getMinutes();
+    if (currentDay >= 5) {
+        console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
 
-    //     ctx.status = 400;
-    //     ctx.body = {
-    //         "error": "some errorcode"
-    //     }
-    //     return;
-    // }
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
 
-    if (currnetHour < 9 || currnetHour > 21) {
+    if (currnetHour < 9 || (currnetHour >= 21 && currnetMin > 20)) {
         console.log(`LrnCancel - 취소 불가능한 시간입니다.`)
 
         ctx.status = 400;
