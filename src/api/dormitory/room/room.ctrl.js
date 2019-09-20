@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {col, fn, Op} from 'sequelize'
 
-import { account, room, roomApply } from '../../../models';
+import {account, room, roomApply} from '../../../models';
 
 import { decodeToken } from '../../../lib/token.js';
 
@@ -192,8 +192,8 @@ export const SetRoom = async (ctx) => {
         }
     });
     
-    if (students.length >= 4 && students.length <= 5) {
-        console.log("SetRoom - 신청자 너무 많음");
+    if (!(students.length >= 4 && students.length <= 5)) {
+        console.log("SetRoom - 신청자 수 오류");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
