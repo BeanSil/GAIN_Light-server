@@ -1,6 +1,6 @@
 import Joi from 'joi';
 import { decodeToken } from '../../lib/token';
-import { points,Student } from '../../models';
+import { points,student } from '../../models';
 
 export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
     console.log("도착");
@@ -36,7 +36,7 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
             detail:detail
         });
 
-        let StudentObject = await Student.findOne({ 
+        let StudentObject = await student.findOne({ 
             where:{
                 user_id:receiver_id
             }
@@ -55,7 +55,7 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
             "point" : currentPoint
         });
 
-        ctx.status(200);
+        ctx.status=200;
         ctx.body = {
             "user_id" : giver_id
         };
@@ -70,7 +70,7 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
 export const ALLPOINT=async(ctx)=>{ //상벌점 전체 조회-관리자 , 관리자용!
     try{
         const allStudentPoint=await points.findAll();
-        ctx.status(200);
+        ctx.status=200;
         ctx.body=allStudentPoint;
     }catch(error){
         console.error(error);
@@ -80,6 +80,7 @@ export const ALLPOINT=async(ctx)=>{ //상벌점 전체 조회-관리자 , 관리
 
 
 export const INDIVIDUALPOINT=async ctx=>{  //상벌점 본인 조회-로그인한 본인
+    console.log("도착");
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
     const StudentId=decoded.user_id; //토큰에서 로그인한 학생의 user_id 가져오기
@@ -90,7 +91,7 @@ export const INDIVIDUALPOINT=async ctx=>{  //상벌점 본인 조회-로그인�
             }
         });
 
-        ctx.status(200);
+        ctx.status=200;
         ctx.body=Studentallstatus;
     }catch(error){
         console.error(error);
@@ -138,7 +139,7 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
             },giver_id,receiver_id,kind,amount,reason_id,detail
         });
 
-        const StudentpastPoint=await Student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수: StudentpastPoint
+        const StudentpastPoint=await student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수: StudentpastPoint
             where:{
                 user_id:receiver_id
             },
@@ -157,13 +158,13 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
             let amountPoint=amount;
         }
         
-        await Student.update({ //수정
+        await student.update({ //수정
             where:{
                 user_id:receiver_id
             },
             point:StudentpastPoint-pastPoint+amountPoint //지금까지 누적된 점수 - 잘못 저장됬던 점수 + 바른점수
         });
-        ctx.status(200);
+        ctx.status=200;
     }catch(error){
         console.error(error);
         next(error);
@@ -183,13 +184,13 @@ export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 po
             attributes:["kind","amount","receiver_id"]
         });
 
-        await points.delete({  //삭제한다.
+        await points.destroy({  //삭제한다.
             where:{
                 point_id:id
             }
         });
 
-        const StudentpastPoint=await Student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수
+        const StudentpastPoint=await student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수
             where:{
                 user_id:columeInformation.receiver_id
             },
@@ -202,13 +203,13 @@ export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 po
             let minusPoint=columeInformation.amount;
         }
 
-        await Student.update({ //삭제된 점수를 빼고 갱신한다.
+        await student.update({ //삭제된 점수를 빼고 갱신한다.
             where:{
                 user_id:columeInformation.receiver_id
             },
             point:StudentpastPoint-minusPoint //누적 점수-삭제할 점수
         });
-        ctx.status(200);
+        ctx.status=200;
         
     }catch(error){
         console.error(error);
