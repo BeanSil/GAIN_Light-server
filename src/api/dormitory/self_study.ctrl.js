@@ -24,9 +24,9 @@ export const LrnReserve = async (ctx) =>{
     }
     
     //학생이 신청하는 것인가?
-    const user = await decodeToken(ctx.header.token);
-    
-    if(!user){
+    try {
+        const user = await decodeToken(ctx.header.token);
+    } catch (error) {
         console.log(`LrnReserve - 존재하지 않는 유저입니다.`);
 
         ctx.status = 400;
@@ -75,8 +75,8 @@ export const LrnReserve = async (ctx) =>{
         }
     });
 
-    if(reserved){
-        console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석: ${user.user_id}`);
+    if(reservedSeat){
+        console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석: ${ctx.request.body.seat_id}`);
 
         ctx.status = 400;
         ctx.body = {
@@ -122,15 +122,15 @@ export const LrnReserve = async (ctx) =>{
     const currentTime = new Date();
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
-    if(currentDay >= 5){
-        console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
+    // if(currentDay >= 5){
+    //     console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
 
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "some errorcode"
-        }
-        return;
-    }
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error" : "some errorcode"
+    //     }
+    //     return;
+    // }
 
     if (currnetHour < 9 || currnetHour > 21){
         console.log(`LrnReserve - 예약 불가능한 시간입니다.`)
@@ -148,7 +148,7 @@ export const LrnReserve = async (ctx) =>{
         "user_id" : user.user_id,
     });
 
-    console.log(`LrnReserve - 예약이 완료되었습니다. 예약번호: ${ctx.request.body.seat_id}`)
+    console.log(`LrnReserve - 예약이 완료되었습니다. 자리 번호: ${ctx.request.body.seat_id}`)
 
     ctx.status = 200;
     ctx.body = {
@@ -171,6 +171,24 @@ export const LrnList = async (ctx) => {
 
     //대여된 좌석 불러오기
 
+    const time = new Date();
+    const today = `${time.getFullYear()}-${"0" + (time.getMonth() + 1)}-${time.getDate()} 00:00:00`;
+
+    const list = await lrnseat_recommend.findAll({
+        where : {
+            rental_time : today
+        }
+    });
+    
+    var record = new Object();
+    var seatArray = Array();
+
+    for(var i in list){
+        record.seat_id = list[i].lrnseat_id;
+        record.user_id = list[i].user_id;
+        seatArray.push(record);
+    }
+
     //로그인 한 유저가 대여 하였는가?
     const reserved = await lrnseat_recommend.findOne({
         where: {
@@ -178,23 +196,25 @@ export const LrnList = async (ctx) => {
         }
     });
     
-    const seat_id = 0;
+    var seat_id = 0;
     
-    if (reserved.length) {
+    if (reserved != null) {
         seat_id = reserved.lrnseat_id;
     }
 
+
+    //성공 시 반환
     ctx.status = 200;
     ctx.body = {
         "user_seat_id" : seat_id,
-
+        "seat" : seatArray
     }
+    console.log(`LrnList - 대여 목록을 반환하였습니다.`)
 }
 
 export const LrnCancel = async (ctx) =>{
     //취소하는 사람과 대여한 사람이 일치하는가?
     const reqUser = await decodeToken(ctx.header.token);
-
     const seat_id = Number(ctx.request.query.seat_id);
 
     const time = new Date();
@@ -231,15 +251,15 @@ export const LrnCancel = async (ctx) =>{
     const currentTime = new Date();
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
-    if (currentDay >= 5) {
-        console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
+    // if (currentDay >= 5) {
+    //     console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
 
-        ctx.status = 400;
-        ctx.body = {
-            "error": "some errorcode"
-        }
-        return;
-    }
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error": "some errorcode"
+    //     }
+    //     return;
+    // }
 
     if (currnetHour < 9 || currnetHour > 21) {
         console.log(`LrnCancel - 취소 불가능한 시간입니다.`)
@@ -249,7 +269,7 @@ export const LrnCancel = async (ctx) =>{
             "error": "some errorcode"
         }
         return;
-    }    
+    }
 
     //seat_user 테이블에서 정보 지우기
     await lrnseat_recommend.destroy({
