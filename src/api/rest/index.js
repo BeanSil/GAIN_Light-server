@@ -1,8 +1,10 @@
 import Router from 'koa-router';
-import {test} from './rest.ctrl';
+import {test, byung, sleepoverApply} from './rest.ctrl';
 
 const rest = new Router();
 
-rest.get('/test', test);
+rest.post('/test', test);
+rest.post('/applyPlace', byung);
+rest.post('/sleepoverApply', sleepoverApply);
 
 export default rest;
