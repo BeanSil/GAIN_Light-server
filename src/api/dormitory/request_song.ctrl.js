@@ -119,6 +119,39 @@ export const SongList = async (ctx) => {
     }
 
 }
+export const SongModify = async (ctx) => {
+
+    const modUser = await decodeToken(ctx.header.token);
+    const reservedSong = await req_song.findOne({
+        where : {
+            rs_id : ctx.request.query.song_id
+        }
+    });
+
+    if (modUser.user_id != reservedSong.user_id) {
+        console.log(`SongModify - 수정하려는 사람이 노래를 신청한 사람과 동일하지 않습니다.`)
+        
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+    //body에서 노래제목 등 받아오기
+
+    // await req_song.update( ctx.request.body, {
+    //     where: {rs_id: ctx.request.query.song_id}
+    // });
+
+    await reservedSong.update();
+
+    console.log(`SongModify = 노래 신청이 수정 되었습니다.`);
+
+    ctx.status = 200;
+    ctx.body = {
+        "user_id" : modUser.user_id
+    }
+}
 export const SongDelete = async (ctx) => {
     const delUser = await decodeToken(ctx.header.token);
 
