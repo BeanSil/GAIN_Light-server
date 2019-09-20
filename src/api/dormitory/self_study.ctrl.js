@@ -17,13 +17,22 @@ export const LrnReserve = async (ctx) =>{
         console.log(`LrnReserve - Joi 형식 에러`);
         ctx.status = 400;
         ctx.body = {
-            "error" : "some errorcode"
+            "error" : "001"
         }
         return;
     }
     
     //학생이 신청하는 것인가?
-    const user = await decodeToken(ctx.header.token);  
+    const user = await decodeToken(ctx.header.token); 
+    
+    if (!user) {
+        console.log(`LrnList - 만료된 토큰입니다.`);
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
     
     const student = await account.findOne({
         where:{
@@ -112,15 +121,15 @@ export const LrnReserve = async (ctx) =>{
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
     const currnetMin = currentTime.getMinutes();
-    if(currentDay >= 5){
-        console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
+    // if(currentDay >= 5){
+    //     console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
 
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "some errorcode"
-        }
-        return;
-    }
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error" : "some errorcode"
+    //     }
+    //     return;
+    // }
 
     if (currnetHour < 9 || (currnetHour >= 21 && currnetMin > 20)){
         console.log(`LrnReserve - 예약 불가능한 시간입니다.`)
@@ -151,7 +160,7 @@ export const LrnList = async (ctx) => {
     const user = await decodeToken(ctx.header.token);
 
     if (!user) {
-        console.log(`LrnList - 존재하지 않는 유저입니다.`);
+        console.log(`LrnList - 만료된 토큰입니다.`);
         ctx.status = 400;
         ctx.body = {
             "error": "some errorcode"
@@ -208,6 +217,16 @@ export const LrnList = async (ctx) => {
 export const LrnCancel = async (ctx) =>{
     //취소하는 사람과 대여한 사람이 일치하는가?
     const reqUser = await decodeToken(ctx.header.token);
+
+    if (!user) {
+        console.log(`LrnList - 만료된 토큰입니다.`);
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
+    
     const seat_id = Number(ctx.request.query.seat_id);
 
     const time = new Date();
@@ -245,15 +264,15 @@ export const LrnCancel = async (ctx) =>{
     const currentDay = currentTime.getDay();
     const currnetHour = currentTime.getHours();
     const currnetMin = currentTime.getMinutes();
-    if (currentDay >= 5) {
-        console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
+    // if (currentDay >= 5) {
+    //     console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
 
-        ctx.status = 400;
-        ctx.body = {
-            "error": "some errorcode"
-        }
-        return;
-    }
+    //     ctx.status = 400;
+    //     ctx.body = {
+    //         "error": "some errorcode"
+    //     }
+    //     return;
+    // }
 
     if (currnetHour < 9 || (currnetHour >= 21 && currnetMin > 20)) {
         console.log(`LrnCancel - 취소 불가능한 시간입니다.`)
