@@ -3,12 +3,13 @@ export const Sleepover_Goouts = (sequelize, DataTypes) => {
     goout_id : {
       type : DataTypes.INTEGER,
       primaryKey : true,
-      auto_increment : true
+      autoIncrement : true
     },
     user_id : {
       type : DataTypes.INTEGER,
-      primaryKey : true,
-      auto_increment : true
+      primaryKey : true
+      // ,
+      // autoIncrement : true
     },
     start_time : {
       type : DataTypes.DATE,

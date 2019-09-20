@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const checkPlace = async (ctx) => {
-  const token = ctx.request.header;
+  const token = ctx.header.token;
   const decoded = await decodeToken(token);
   const decodedUserId = decoded.user_id;
 
@@ -17,6 +17,7 @@ export const checkPlace = async (ctx) => {
   });
   console.log(check.place);
 }
+
 export const byung = async (ctx) => {
   const Registeration = Joi.object().keys({
     "place": Joi.string().required()
@@ -50,7 +51,7 @@ export const byung = async (ctx) => {
   ctx.body = "거주 지역 등록완료";
 }
 
-export const sleepoverApply = async (ctx, next) => {
+export const sleepoverApplies = async (ctx, next) => {
   const token = ctx.header.token;
   const decoded = await decodeToken(token);
   const decodedUserId = decoded.user_id;
@@ -94,13 +95,13 @@ export const sleepoverApply = async (ctx, next) => {
   
 }
 
-export const sleepoverApply_delete = async (ctx, next) => {
+export const sleepoverApplies_delete = async (ctx, next) => {
   const token = ctx.header.token;
   const decoded = await decodeToken(token);
   const decodedUserId = decoded.user_id;
   console.log(decodedUserId);
   try {
-    await sleepover_applies.destory({
+    await sleepover_applies.destroy({
       where: { user_id: decodedUserId }
     });
     ctx.body = "잔류 신청 취소 완료";
@@ -109,6 +110,23 @@ export const sleepoverApply_delete = async (ctx, next) => {
     return next(error);
   }
 }
+
+export const sleepoverApplies_check = async (ctx, next) => {
+  const token = ctx.header.token;
+  const decoded = await decodeToken(token);
+  const decodedUserId = decoded.user_id; 
+
+  try{
+    let applies = await sleepover_applies.findOne({
+      where : { user_id : decodedUserId }
+    });
+  }catch (error) {
+    console.log(error);
+    return next(error);
+  }
+  console.log(applies.apply_id, applies.created_at);
+}
+
 
 
 

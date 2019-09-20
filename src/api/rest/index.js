@@ -1,11 +1,12 @@
 import Router from 'koa-router';
-import {checkPlace, byung, sleepoverApply, sleepoverApply_delete} from './rest.ctrl';
+import {checkPlace, byung, sleepoverApplies, sleepoverApplies_delete, sleepoverApplies_check } from './rest.ctrl';
 
 const rest = new Router();
 
-rest.post('/checkPlace', checkPlace);
+rest.get('/checkPlace', checkPlace);
 rest.post('/applyPlace', byung);
-rest.post('/sleepoverApply', sleepoverApply);
-rest.delete('/sleepoverApply_delete', sleepoverApply_delete);
+rest.post('/sleepoverApplies', sleepoverApplies);
+rest.delete('/sleepoverApplies_delete', sleepoverApplies_delete);
+rest.get('/sleepoverApplies_check', sleepoverApplies_check);
 
 export default rest;
