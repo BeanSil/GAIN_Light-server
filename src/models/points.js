@@ -22,11 +22,10 @@ export const points = (sequelize, DataTypes) => {
         },
         reason_id:{
             type:DataTypes.INTEGER,
-            primaryKey:true,
-            autoIncrement: true
+            primaryKey:true
         },
         detail:{
-            type:DataTypes.STRING(100),
+            type:DataTypes.STRING,
         },
         created_at:{
             type:DataTypes.DATE,

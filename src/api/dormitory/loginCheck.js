@@ -1,6 +1,8 @@
 import {accounts} from '../../models';
+import { decodeToken } from '../../lib/token';
 
-exports.isLoggedIn=(ctx,next)=>{  //로그인 했는지 검사
+
+export const isLoggedIn=(ctx,next)=>{  //로그인 했는지 검사
     if(ctx.header.token){   //토큰이 있으면 통과! 
         next();
     }else{
@@ -29,7 +31,7 @@ exports.adminLoggedIn=async(ctx,next)=>{ //관리자(선생님) 인지 검사
     }
 };
 
-exports.studentLoggedIn=(ctx,next)=>{//학생인지 검사
+export const studentLoggedIn = async (ctx,next) =>{//학생인지 검사
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
     const StudentId=decoded.user_id; //토큰에서 로그인한 회원의 user_id 가져오기
