@@ -161,6 +161,24 @@ export const UpdateNextRoom = async (ctx) => {
     }
 };
 
+export const GetApplications = async (ctx) => {
+    if (ctx.request.user.authority !== 3) {
+        console.log("SetRoom - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    let applies = await roomApply.findAll();
+    
+    ctx.body = {
+        is_succeed: true,
+        data: applies
+    };
+};
+
 export const SetRoom = async (ctx) => {
     if (ctx.request.user.authority !== 3) {
         console.log("SetRoom - 권한 오류");
