@@ -2,11 +2,10 @@ import Router from 'koa-router';
 import Joi from 'joi';
 import {decodeToken} from '../../lib/token';
 import {points,Student} from '../../models';
-import {isLoggedIn,adminLoggedIn,studentLoggedIn} from './loginCheck';
 
 const api= new Router();
 
-api.post('/dormitory/point',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
+export const POINT=async(ctx)=>{  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
 
     const Request = Joi.object().keys({
         giver_id:Joi.integer().required(),
@@ -56,9 +55,10 @@ api.post('/dormitory/point',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  //상�
         console.error(error);
         return next(error);
     } 
-});
+};
 
-api.get('/dormitory/allpoint',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //상벌점 전체 조회-관리자 , 관리자용!
+
+export const ALLPOINT=async(ctx)=>{ //상벌점 전체 조회-관리자 , 관리자용!
     try{
         const allStudentPoint=await points.findAll();
         ctx.status(200);
@@ -67,9 +67,10 @@ api.get('/dormitory/allpoint',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //상�
         console.error(error);
         return next(error);
     }
-});
+};
 
-api.get('/dormitory/individualpoint',isLoggedIn,studentLoggedIn,async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
+
+export const INDIVIDUALPOINT=async(ctx)=>{  //상벌점 본인 조회-로그인한 본인
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
     const StudentId=decoded.user_id; //토큰에서 로그인한 학생의 user_id 가져오기
@@ -86,12 +87,13 @@ api.get('/dormitory/individualpoint',isLoggedIn,studentLoggedIn,async(ctx,next)=
         console.error(error);
         return next(error);
     }
-});
+};
 
-api.put('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
+
+export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
     const Request = Joi.object().keys({
         giver_id:Joi.integer().required(),
-        receiver_id:Joi.integer().required(),
+        receiver_id:Joi.integer().required(),  
         kind:Joi.required(),
         amount:Joi.number().integer().required(),
         reason_id:Joi.integer().required(),
@@ -146,9 +148,10 @@ api.put('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  // �
         next(error);
     }
 
-});
+};
 
-api.delete('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
+
+export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
     const {id}=ctx.params;
 
     try{
@@ -184,6 +187,6 @@ api.delete('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //
         console.error(error);
         next(error);
     }
-});
+};
 
 module.exports=api;
