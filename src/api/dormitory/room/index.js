@@ -1,7 +1,13 @@
 import Router from 'koa-router';
-import {ApplyNextRoom, SetRoom, UpdateNextRoom, GetRooms, GetRoomByRoomId, GetRoomByUserId} from './room.ctrl';
+import {ApplyNextRoom, SetRoom, UpdateNextRoom, GetRooms, GetRoomByRoomId, GetRoomByUserId, UserVerification} from './room.ctrl';
+
+import { jwtMiddleware } from '../../../lib/token.js';
 
 const room = new Router();
+
+room.use(jwtMiddleware);
+
+room.use(UserVerification);
 
 room.post('/apply', ApplyNextRoom);
 room.post('/apply/:apply_id', UpdateNextRoom);

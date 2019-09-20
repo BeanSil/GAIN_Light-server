@@ -10,6 +10,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const ApplyNextRoom = async (ctx) => {
+    if (ctx.request.user.authority !== 2) {
+        console.log("ApplyNextRoom - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
     const Application = Joi.object().keys({
         students: Joi.array().items(Joi.number().integer()).min(2).max(5).required()
     });
@@ -68,6 +76,14 @@ export const ApplyNextRoom = async (ctx) => {
 };
 
 export const UpdateNextRoom = async (ctx) => {
+    if (ctx.request.user.authority !== 2) {
+        console.log("UpdateNextRoom - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
     const Params = Joi.object().keys({
        apply_id: Joi.string().regex(/^\d+$/).required()
     });
@@ -146,6 +162,15 @@ export const UpdateNextRoom = async (ctx) => {
 };
 
 export const SetRoom = async (ctx) => {
+    if (ctx.request.user.authority !== 3) {
+        console.log("SetRoom - 권한 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
     try {
         ctx.params.room_id = Number.parseInt(ctx.params.room_id);
     } catch (e) {
@@ -335,7 +360,6 @@ export const GetRoomByUserId = async (ctx) => {
         };
         return;
     }
-    
     let roomSearched = await room.findOne({
         attributes: ['room_no', 'allocation_id', 'user_id', 'is_banned'],
         group: "room_no",
@@ -359,4 +383,27 @@ export const GetRoomByUserId = async (ctx) => {
         is_succeed: true,
         data: roomSearched
     };
+};
+
+export const UserVerification = async (ctx, next) => {
+    const decodedUser = ctx.request.user;
+    let verification = await account.findOne({where: {user_id: decodedUser.user_id}});
+    
+    if (!verification.length) {
+        ctx.request.user.authority = 0;
+    }
+    switch (verification.auth) {
+        case "게스트":
+            ctx.request.user.authority = 1;
+            break;
+        case "학생":
+            ctx.request.user.authority = 2;
+            break;
+        case "선생님":
+            ctx.request.user.authority = 3;
+            break;
+        default:
+            ctx.request.user.authority = 0;
+    }
+    return next();
 };
