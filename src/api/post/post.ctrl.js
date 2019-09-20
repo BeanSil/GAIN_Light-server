@@ -95,3 +95,44 @@ export const uploadcomment = async (ctx) => {
     ctx.status = 200;
     ctx.body = decoded.user_id;
 }
+
+export const getBoard = async (ctx) => {
+
+    const kind = ctx.query.kind;
+
+    const getboard = await board.findAll({
+        where : {
+            "kind" : kind
+        }
+    });
+
+    ctx.body = getboard;
+
+    let needboard = [];
+    for(var i in getboard){
+        if(getboard[i].is_anonymous == true){
+            needboard.push({
+                "board_id" : getboard[i].board_id,
+                "user_id" : " ",
+                "title" : getboard[i].title,
+                "content" : getboard[i].content,
+                "createdAt" : getboard[i].createdAt
+            });
+        }else{
+            needboard.push({
+                "board_id" : getboard[i].board_id,
+                "user_id" : getboard[i].user_id,
+                "title" : getboard[i].title,
+                "content" : getboard[i].content,
+                "createdAt" : getboard[i].createdAt
+            });
+        }
+        
+    }
+
+    ctx.status = 200;
+    ctx.body = {
+        "list" : needboard
+    }
+
+}
