@@ -1,5 +1,3 @@
-import { now } from "moment";
-
 export const Lrnrooms = (sequelize, DataTypes) => {
     return sequelize.define('Lrnrooms', {
         lrnroom_id: {
@@ -37,7 +35,7 @@ export const Lrnseat_recommend = (sequelize, DataTypes) => {
         },
         rental_time: {
             type: DataTypes.DATE,
-            default: now()
+            defaultValue: DataTypes.NOW
         }
     });
 };
