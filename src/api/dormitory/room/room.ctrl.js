@@ -278,6 +278,46 @@ export const GetRooms = async (ctx) => {
 };
 
 export const GetRoomByRoomId = async (ctx) => {
+    try {
+        ctx.params.room_no = Number.parseInt(ctx.params.room_no);
+    } catch (e) {
+        console.log("SetRoom - 기타 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002-1"
+        };
+        return;
+    }
+    
+    const Params = Joi.object().keys({
+        room_no: Joi.alternatives().try(Joi.number().integer().min(301).max(320).required(), Joi.number().integer().min(401).max(421).required(), Joi.number().integer().min(501).max(521).required())
+    });
+    
+    let validation = Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("GetRoomByRoomId - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    let roomSearched = await room.findOne({
+        attributes: ['room_no', [fn('GROUP_CONCAT', col('allocation_id')), 'allocation_ids'], [fn('GROUP_CONCAT', col('user_id')), 'user_ids'], [fn('GROUP_CONCAT', col('is_banned')), 'is_banneds']],
+        group: "room_no",
+        where: {
+            room_no: ctx.params.room_no,
+            year: new Date().getFullYear(),
+            quarter: (new Date().getMonth() + 1) / 3
+        }
+    });
+    
+    ctx.body = {
+        is_succeed: true,
+        data: roomSearched
+    };
 };
 
 export const GetRoomByUserId = async (ctx) => {
