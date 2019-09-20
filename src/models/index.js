@@ -10,6 +10,7 @@ import {Board_comment} from './Board_comment';
 import {Board_likability} from './Board_likability';
 import {Board_com_likability} from './Board_com_likability';
 import {Board_data} from './Board_data';
+import { Room, RoomApply } from './Room';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['gain'];
 
@@ -29,5 +30,7 @@ const board_comment = Board_comment(sequelize,Sequelize);
 const board_likability = Board_likability(sequelize,Sequelize);
 const board_com_likability = Board_com_likability(sequelize,Sequelize);
 const board_data = Board_data(sequelize, Sequelize);
+const room = Room(sequelize, Sequelize);
+const roomApply = RoomApply(sequelize, Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, board, board_comment, board_likability,board_com_likability, board_data };
+export { sequelize, Sequelize, account, student, teacher, guest, board, board_comment, board_likability,board_com_likability, board_data, room, roomApply };
