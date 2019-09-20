@@ -1,16 +1,14 @@
 import Router from 'koa-router';
 
-import {uploadBoard} from './post.ctrl';
-import {uploadcomment} from './post.ctrl';
-import {getBoard} from './post.ctrl';
-import {board_res} from './post.ctrl';
-import {board_com_res} from './post.ctrl';
+import {uploadBoard, uploadcomment, getBoard, board_res, board_com_res, DeleteBoard, DeleteComment} from './post.ctrl';
 import auth from '../auth';
 
 const post = new Router();
 
 post.post('/board',uploadBoard);
+post.delete('/board/:board_id', DeleteBoard);
 post.post('/comment',uploadcomment);
+post.delete('/comment/:comment_id', DeleteComment);
 post.post('/board_likability',board_res);
 post.post('/board_com_likability',board_com_res);
 

@@ -258,4 +258,72 @@ export const board_com_res = async (ctx) => {
 
     ctx.status = 200;
     ctx.body = "success";
-}
+};
+
+export const DeleteBoard = async (ctx) => {
+    // TODO: 유저 권한 확인
+    
+    const boardIdVerify = Joi.object().keys({
+        board_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const verification = Joi.validate(ctx.params, boardIdVerify);
+    
+    if (verification.error) {
+        console.log("DeleteBoard - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    const result = await board.destroy({where: {board_id: ctx.params.board_id}});
+    
+    if (!result) {
+        console.log("DeleteBoard - 대상이 존재하지 않음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true
+    }
+};
+
+export const DeleteComment = async (ctx) => {
+    // TODO: 유저 권한 확인
+    
+    const commentIdVerify = Joi.object().keys({
+        comment_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const verification = Joi.validate(ctx.params, commentIdVerify);
+    
+    if (verification.error) {
+        console.log("DeleteComment - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    const result = await board_comment.destroy({where: {comment_id: ctx.params.comment_id}});
+    
+    if (!result) {
+        console.log("DeleteComment - 대상이 존재하지 않음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true
+    }
+};
