@@ -1,7 +1,7 @@
 import Joi from 'joi';
 import {col, fn, Op} from 'sequelize'
 
-import {account, room, roomApply} from '../../../models';
+import {account, student, room, roomApply} from '../../../models';
 
 import { decodeToken } from '../../../lib/token.js';
 
@@ -29,6 +29,19 @@ export const ApplyNextRoom = async (ctx) => {
         ctx.status = 400;
         ctx.body = {
             "error" : "002"
+        };
+        return;
+    }
+    
+    const StudentList = await student.findAll({
+        user_id: ctx.request.body.students
+    });
+    
+    if (StudentList.length !== ctx.request.body.students.length) {
+        console.log("ApplyNextRoom - 입력 데이터 에러 - 학생이 아닌 유저 존재");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
         };
         return;
     }
@@ -95,10 +108,23 @@ export const UpdateNextRoom = async (ctx) => {
     const validation = Joi.validate(ctx.request.body, Application).error || Joi.validate(ctx.params, Params).error;
     
     if (validation) {
-        console.log("ApplyNextRoom - Joi 형식 에러");
+        console.log("UpdateNextRoom - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "002"
+        };
+        return;
+    }
+    
+    const StudentList = await student.findAll({
+        user_id: ctx.request.body.students
+    });
+    
+    if (StudentList.length !== ctx.request.body.students.length) {
+        console.log("UpdateNextRoom - 입력 데이터 에러 - 학생이 아닌 유저 존재");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
         };
         return;
     }
@@ -127,7 +153,7 @@ export const UpdateNextRoom = async (ctx) => {
     });
     
     if (AppliedExist.length > 1) {
-        console.log("ApplyNextRoom - 입력 데이터 에러 - 유저가 이미 존재");
+        console.log("UpdateNextRoom - 입력 데이터 에러 - 유저가 이미 존재");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
@@ -136,7 +162,7 @@ export const UpdateNextRoom = async (ctx) => {
     }
     
     if (!AppliedExist.length) {
-        console.log("ApplyNextRoom - 입력 데이터 에러 - 대상이 존재하지 않음");
+        console.log("UpdateNextRoom - 입력 데이터 에러 - 대상이 존재하지 않음");
         ctx.status = 400;
         ctx.body = {
             "error" : "004"
@@ -357,6 +383,19 @@ export const SetRoom = async (ctx) => {
     
     if (!(students.length >= 4 && students.length <= 5)) {
         console.log("SetRoom - 신청자 수 오류");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    const StudentList = await student.findAll({
+        user_id: ctx.request.body.students
+    });
+    
+    if (StudentList.length !== ctx.request.body.students.length) {
+        console.log("SetRoom - 입력 데이터 에러 - 학생이 아닌 유저 존재");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
