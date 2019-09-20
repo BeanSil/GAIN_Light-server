@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { board,account, board_comment, board_likability, board_com_likability} from '../../models';
+import { board,account, board_comment, board_likability, board_com_likability, board_data} from '../../models';
 import { decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
@@ -164,12 +164,6 @@ export const getBoard = async (ctx) => {
             });
         }
     }
-
-    const token = ctx.header.token;
-
-    const decoded = await decodeToken(token);
-
-    let son=[];
    
     for(var i in parentcomment){
         parentcomment[i].dataValues.sons = []
@@ -187,10 +181,7 @@ export const getBoard = async (ctx) => {
 
     console.log(parentcomment);
     ctx.body = parentcomment;
-    // ctx.status = 200;
-    // ctx.body = {
-    //     "list" : needboard
-    // }
+
 }
 
 export const board_res = async (ctx) => {
@@ -327,3 +318,32 @@ export const DeleteComment = async (ctx) => {
         is_succeed: true
     }
 };
+
+export const BoardData = async (ctx) => {
+
+    const Uploadboard_data = Joi.object().keys({
+        board_id : Joi.number().required(),
+        upload_url : Joi.string().max(62525)
+    });
+
+    const result = Joi.validate(ctx.request.body, Uploadboard_data);
+
+     // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
+
+     if(result.error) {
+        console.log("Register - Joi 형식 에러")
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        }
+        return;
+    }
+
+        await board_data.create({
+            "board_id" : ctx.request.body.board_id,
+            "upload_url" : ctx.request.body.upload_url
+        });
+
+        ctx.status = 200;
+        ctx.body = ctx.request.body.board_id;
+}
