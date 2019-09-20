@@ -21,5 +21,6 @@ const student = Student(sequelize, Sequelize);
 const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
 const board = Board(sequelize, Sequelize);
+const req_song = Req_song(sequelize, Sequelize)
 
-export { sequelize, Sequelize, account, student, teacher, guest, board };
+export { sequelize, Sequelize, account, student, teacher, guest, board };export { sequelize, Sequelize, account, student, teacher, guest, board, req_song};
