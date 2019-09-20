@@ -1,4 +1,4 @@
-export const Sleepover_Applys = (sequelize, DataTypes) => {
+export const Sleepover_Applies = (sequelize, DataTypes) => {
   return sequelize.define('sleepover_apply', {
     apply_id : {
       type : DataTypes.INTEGER,

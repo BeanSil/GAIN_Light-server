@@ -7,7 +7,7 @@ import { Teacher } from './Teacher';
 import { Guest } from './Guest';
 import { Board } from './Board';
 import { Sleepover_Allows } from './Sleepover_Allows';
-import { Sleepover_Applys } from './Sleepover_Applys';
+import { Sleepover_Applies } from './Sleepover_Applies';
 import { Sleepover_Goouts } from './Sleepover_Goouts';
 import { Sleepover_Sleepouts } from './Sleepover_Sleepouts';
 
@@ -26,8 +26,8 @@ const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
 const board = Board(sequelize, Sequelize);
 const sleepover_allows = Sleepover_Allows(sequelize, Sequelize);
-const sleepover_applys = Sleepover_Applys(sequelize, Sequelize);
+const sleepover_applies = Sleepover_Applies(sequelize, Sequelize);
 const sleepover_goouts = Sleepover_Goouts(sequelize, Sequelize);
 const sleepover_sleepouts = Sleepover_Sleepouts(sequelize, Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, board, sleepover_allows, sleepover_applys, sleepover_goouts, sleepover_sleepouts} ;
+export { sequelize, Sequelize, account, student, teacher, guest, board, sleepover_allows, sleepover_applies, sleepover_goouts, sleepover_sleepouts} ;
