@@ -1,4 +1,4 @@
-import { lrnrooms, lrnseats, lrnseat_recommend } from "../../models"
+import { lrnrooms, lrnseats, lrnseat_recommend, Sequelize, sequelize } from "../../models"
 import { decodeToken } from "../../lib/token";
 import Joi from "joi"
 import { account } from "../../models";
@@ -29,13 +29,12 @@ export const LrnReserve = async (ctx) =>{
     if(!user){
         console.log(`LrnReserve - 존재하지 않는 유저입니다.`);
 
-        ctx.request = 400;
+        ctx.status = 400;
         ctx.body = {
             "error" : "some errorcode"
         }
         return;
     }
-    console.log(user.user_id);
     
     const student = await account.findOne({
         where:{
@@ -60,7 +59,7 @@ export const LrnReserve = async (ctx) =>{
     });
 
     if (reserved) {
-        console.log(`LrnReserve - 이미 대여한 유저입니다. 대여 요청한 유저: ${ctx.request.body.user_id}`);
+        console.log(`LrnReserve - 이미 대여한 유저입니다. 대여 요청한 유저: ${user.user_id}`);
 
         ctx.status = 400;
         ctx.body = {
@@ -77,7 +76,7 @@ export const LrnReserve = async (ctx) =>{
     });
 
     if(reserved){
-        console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석 : ${ctx.request.body.seat_id}`);
+        console.log(`LrnReserve - 이미 대여된 좌석입니다. 대여 요청한 좌석: ${user.user_id}`);
 
         ctx.status = 400;
         ctx.body = {
@@ -120,9 +119,8 @@ export const LrnReserve = async (ctx) =>{
     // }
     
     //현재 신청 가능한 시간인가?
-    // const currentTime = new Date();
+    const currentTime = new Date();
 
-    // console.log(currentTime.getHours());
 
     
 
@@ -132,7 +130,7 @@ export const LrnReserve = async (ctx) =>{
         "user_id" : user.user_id,
     });
 
-    console.log(`LrnReserve - 예약이 완료되었습니다. 자리번호 : ${seat_id}`)
+    console.log(`LrnReserve - 예약이 완료되었습니다. 예약번호: ${ctx.request.body.seat_id}`)
 
     ctx.status = 200;
     ctx.body = {
@@ -142,11 +140,11 @@ export const LrnReserve = async (ctx) =>{
 
 export const LrnList = async (ctx) => {
     //로그인 한 유저는 누구인가?
-    const user = decodeToken(ctx.header.token);
+    const user = await decodeToken(ctx.header.token);
 
     if (!user) {
         console.log(`LrnList - 존재하지 않는 유저입니다.`);
-        ctx.request = 400;
+        ctx.status = 400;
         ctx.body = {
             "error": "some errorcode"
         }
@@ -156,7 +154,7 @@ export const LrnList = async (ctx) => {
     //대여된 좌석 불러오기
 
     //로그인 한 유저가 대여 하였는가?
-    const reserved = await lrnseat_recommend.findAll({
+    const reserved = await lrnseat_recommend.findOne({
         where: {
             user_id: user.user_id
         }
@@ -168,7 +166,7 @@ export const LrnList = async (ctx) => {
     //     seat_id = reserved.lrnseat_id;
     // }
 
-    ctx.request = 200;
+    ctx.status = 200;
     ctx.body = {
         "user_seat_id" : seat_id,
 
@@ -177,20 +175,55 @@ export const LrnList = async (ctx) => {
 
 export const LrnCancel = async (ctx) =>{
     //취소하는 사람과 대여한 사람이 일치하는가?
-    const reqUser = decodeToken(ctx.header.token);
+    const reqUser = await decodeToken(ctx.header.token);
 
-    if (reqUser.user_id != ctx.query.seat_id){
-        console.log(`LrnCancel - 요청한 유저와 취소할 유저가 일치하지 않습니다.`);
+    const seat_id = Number(ctx.request.query.seat_id);
 
-        ctx.request = 400;
+    const time = new Date();
+    const today = `${time.getFullYear()}-${"0"+(time.getMonth()+1)}-${time.getDate()} 00:00:00`;
+
+    const reserved = await lrnseat_recommend.findOne({
+        where :{
+            lrnseat_id : seat_id,
+            rental_time : today
+        }
+    });
+
+    if(reserved == null){
+        console.log(`LrnCancel - 해당 자리는 예약되지 않았습니다. 자리 번호 ${ctx.query.seat_id}`);
+        
+        ctx.status = 400;
         ctx.body = {
             "error" : "some errorcode"
         }
         return;
     }
 
+    if (reqUser.user_id != reserved.user_id){
+        console.log(`LrnCancel - 요청한 유저와 취소할 유저가 일치하지 않습니다.`);
+
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
 
     //취소 가능한 시간인가?
 
     //seat_user 테이블에서 정보 지우기
+    await lrnseat_recommend.destroy({
+        where : {
+            lrnseat_id: seat_id,
+            rental_time: today
+        }
+    });
+
+    console.log(`LrnCancel - 자리 예약이 취소되었습니다. 취소된 자리: ${ ctx.query.seat_id }`);
+    
+    ctx.status = 200;
+    ctx.body = {
+        "user_id" : reqUser.user_id
+    }
+
 }
