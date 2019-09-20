@@ -218,7 +218,7 @@ export const LrnCancel = async (ctx) =>{
     //취소하는 사람과 대여한 사람이 일치하는가?
     const reqUser = await decodeToken(ctx.header.token);
 
-    if (!user) {
+    if (!reqUser) {
         console.log(`LrnList - 만료된 토큰입니다.`);
         ctx.status = 400;
         ctx.body = {
@@ -226,7 +226,7 @@ export const LrnCancel = async (ctx) =>{
         }
         return;
     }
-    
+
     const seat_id = Number(ctx.request.query.seat_id);
 
     const time = new Date();
