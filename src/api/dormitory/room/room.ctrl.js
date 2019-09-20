@@ -78,9 +78,9 @@ export const UpdateNextRoom = async (ctx) => {
         students: Joi.array().items(Joi.number().integer()).min(2).max(5).required()
     });
     
-    const validation = Joi.validate(ctx.request.body, Application) && Joi.validate(ctx.params, Params);
+    const validation = Joi.validate(ctx.request.body, Application).error || Joi.validate(ctx.params, Params).error;
     
-    if (validation.error) {
+    if (validation) {
         console.log("ApplyNextRoom - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
@@ -168,9 +168,9 @@ export const SetRoom = async (ctx) => {
         students: Joi.array().items(Joi.number().integer()).max(5).required()
     });
     
-    const validation = Joi.validate(ctx.params, Params) && Joi.validate(ctx.request.body, Setter);
+    const validation = Joi.validate(ctx.params, Params).error || Joi.validate(ctx.request.body, Setter).error;
     
-    if (validation.error) {
+    if (validation) {
         console.log("SetRoom - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
@@ -192,7 +192,7 @@ export const SetRoom = async (ctx) => {
         }
     });
     
-    if (students.legnth >= 4 && students.legnth <= 5) {
+    if (students.length >= 4 && students.length <= 5) {
         console.log("SetRoom - 신청자 너무 많음");
         ctx.status = 400;
         ctx.body = {
