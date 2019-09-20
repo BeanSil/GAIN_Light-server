@@ -109,7 +109,7 @@ export const LrnReserve = async (ctx) =>{
     //     }
     // })
 
-    // if(possibleRoom.object != "something"){
+    // if(possibleRoom.object == "none"){
     //     console.log(`LrnReserve - 예약 불가능한 학습실 입니다.`);
 
     //     ctx.status = 400;
@@ -120,9 +120,27 @@ export const LrnReserve = async (ctx) =>{
     
     //현재 신청 가능한 시간인가?
     const currentTime = new Date();
+    const currentDay = currentTime.getDay();
+    const currnetHour = currentTime.getHours();
+    if(currentDay >= 5){
+        console.log(`LrnReserve - 예약 불가능한 요일입니다.`)
 
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
 
-    
+    if (currnetHour < 9 || currnetHour > 21){
+        console.log(`LrnReserve - 예약 불가능한 시간입니다.`)
+        
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }    
 
     //신청
     await lrnseat_recommend.create({
@@ -162,9 +180,9 @@ export const LrnList = async (ctx) => {
     
     const seat_id = 0;
     
-    // if (reserved.length) {
-    //     seat_id = reserved.lrnseat_id;
-    // }
+    if (reserved.length) {
+        seat_id = reserved.lrnseat_id;
+    }
 
     ctx.status = 200;
     ctx.body = {
@@ -190,7 +208,7 @@ export const LrnCancel = async (ctx) =>{
     });
 
     if(reserved == null){
-        console.log(`LrnCancel - 해당 자리는 예약되지 않았습니다. 자리 번호 ${ctx.query.seat_id}`);
+        console.log(`LrnCancel - 해당 자리는 예약되지 않았습니다. 자리 번호: ${ctx.query.seat_id}`);
         
         ctx.status = 400;
         ctx.body = {
@@ -210,6 +228,28 @@ export const LrnCancel = async (ctx) =>{
     }
 
     //취소 가능한 시간인가?
+    const currentTime = new Date();
+    const currentDay = currentTime.getDay();
+    const currnetHour = currentTime.getHours();
+    if (currentDay >= 5) {
+        console.log(`LrnCancel - 취소 불가능한 요일입니다.`)
+
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }
+
+    if (currnetHour < 9 || currnetHour > 21) {
+        console.log(`LrnCancel - 취소 불가능한 시간입니다.`)
+
+        ctx.status = 400;
+        ctx.body = {
+            "error": "some errorcode"
+        }
+        return;
+    }    
 
     //seat_user 테이블에서 정보 지우기
     await lrnseat_recommend.destroy({
