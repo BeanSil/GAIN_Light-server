@@ -1,4 +1,5 @@
-import { sleepover_allows, sleepover_applys, sleepover_goouts, sleepover_sleepouts } from '../../models';
+import { account } from '../../models';
+import { sleepover_allows, sleepover_applies, sleepover_goouts, sleepover_sleepouts } from '../../models';
 import { generateToken, decodeToken } from '../../lib/token';
 import { Sequelize } from 'sequelize';
 import Joi from 'joi';
@@ -6,12 +7,16 @@ import Joi from 'joi';
 import dotenv from 'dotenv';
 dotenv.config();
 
-export const test = async (ctx) => {
-  await sleepover_allows.create({
-    place : "순천"
-  });
-}
+export const checkPlace = async (ctx) => {
+  const token = ctx.request.header;
+  const decoded = await decodeToken(token);
+  const decodedUserId = decoded.user_id;
 
+  let check = await sleepover_allows.findOne({
+    where : {user_id : decodedUserId}
+  });
+  console.log(check.place);
+}
 export const byung = async (ctx) => {
   const Registeration = Joi.object().keys({
     "place": Joi.string().required()
@@ -39,8 +44,8 @@ export const byung = async (ctx) => {
   console.log(decodedUserId);
 
   await sleepover_allows.create({
-    user_id : decodedUserId,
-    place : region
+    "user_id" : decodedUserId,
+    "place" : region
   });
   ctx.body = "거주 지역 등록완료";
 }
@@ -49,33 +54,53 @@ export const sleepoverApply = async (ctx, next) => {
   const token = ctx.header.token;
   const decoded = await decodeToken(token);
   const decodedUserId = decoded.user_id;
-  console.log(decodedUserId);
+  // console.log(decodedUserId);
 
-  let place = await sleepover_allows.findOne({
-    where: { user_id: decodedUserId }
+  let apply = await sleepover_allows.findOne({
+    where: { user_id: decodedUserId },
+    attributes:['place']
   });
-  console.log(place);
+  console.log("플레이스::",apply.place);
 
-  // 타시도 학생의 경우에만 밑의 문장을 실행
+  let acnt = await account.findOne({
+    where: {user_id : decodedUserId}
+  });
+  console.log("어스::", acnt.auth);
+
+  if (acnt.auth != "학생"){
+    ctx.status = 400;
+    ctx.body = {
+      "error" : "학생만 잔류를 신청할 수 있습니다."
+    };
+    return;
+  }else if (apply.place == "광주"){
+    ctx.status = 400;
+    ctx.body = {
+      "error" : "타시도 학생만 잔류를 신청할 수 있습니다."
+    };
+    return;
+  }
+  
   try {
-    await sleepover_applys.create({
-      user_id: decodedUserId
+    await sleepover_applies.create({
+      "user_id": decodedUserId
     });
   } catch (error) {
     console.log(error);
     return next(error);
   }
   ctx.body = "잔류 신청 완료";
-  return
+  return;
+  
 }
 
 export const sleepoverApply_delete = async (ctx, next) => {
   const token = ctx.header.token;
   const decoded = await decodeToken(token);
   const decodedUserId = decoded.user_id;
-
+  console.log(decodedUserId);
   try {
-    await sleepover_applys.destroy({
+    await sleepover_applies.destory({
       where: { user_id: decodedUserId }
     });
     ctx.body = "잔류 신청 취소 완료";
@@ -84,6 +109,8 @@ export const sleepoverApply_delete = async (ctx, next) => {
     return next(error);
   }
 }
+
+
 
 
 
