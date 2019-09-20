@@ -119,3 +119,42 @@ export const SongList = async (ctx) => {
     }
 
 }
+export const SongDelete = async (ctx) => {
+    const delUser = await decodeToken(ctx.header.token);
+
+    const reservedSong = await req_song.findOne({
+        where : {
+            rs_id : ctx.request.query.song_id
+        }
+    });
+
+    //취소하려는 사람과 요청한 사람이 일치하는가?
+    if(delUser.user_id != reservedSong.user_id) {
+        console.log(`SongDelete - 취소하려는 사람과 신청한 사람이 일치하지 않습니다.`)
+       
+        ctx.status = 400;
+        ctx.body = {
+            error : "some errorcode"
+        }
+        return;
+    }
+
+    if (reservedSong.status != "대기"){
+        console.log(`SongDelete - 현재 상태가 대기중이 아닙니다.`)
+        
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+
+    await reservedSong.destroy();
+
+    console.log(`SongDelete = 노래 신청이 취소 되었습니다. 취소된 노래 : ${ ctx.query.song_id }`);
+
+    ctx.status = 200;
+    ctx.body = {
+        "user_id" : delUser.user_id
+    }
+} 
