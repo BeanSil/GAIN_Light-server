@@ -265,7 +265,7 @@ export const SetRoom = async (ctx) => {
 
 export const GetRooms = async (ctx) => {
     let rooms = await room.findAll({
-        attributes: ['room_no', [fn('GROUP_CONCAT', col('user_id')), 'user_ids']], //'GROUP_CONCAT(allocation_id, user_id, is_banned)'],
+        attributes: ['room_no', [fn('GROUP_CONCAT', col('allocation_id')), 'allocation_ids'], [fn('GROUP_CONCAT', col('user_id')), 'user_ids'], [fn('GROUP_CONCAT', col('is_banned')), 'is_banneds']], //'GROUP_CONCAT(allocation_id, user_id, is_banned)'],
         group: "room_no",
         where: {
             year: new Date().getFullYear(),
@@ -273,9 +273,10 @@ export const GetRooms = async (ctx) => {
         }
     });
     
-    console.log(rooms);
-    
-    ctx.body = rooms;
+    ctx.body = {
+        is_succeed: true,
+        data: rooms
+    };
 };
 
 export const GetRoom = async (ctx) => {
