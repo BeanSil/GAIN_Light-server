@@ -2,10 +2,11 @@ import Router from 'koa-router';
 import Joi from 'joi';
 import {decodeToken} from '../../lib/token';
 import {points,Student} from '../../models';
+import {isLoggedIn,adminLoggedIn,studentLoggedIn} from './loginCheck';
 
 const api= new Router();
 
-api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
+api.post('/dormitory/point',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
 
     const Request = Joi.object().keys({
         giver_id:Joi.integer().required(),
@@ -57,7 +58,7 @@ api.post('/dormitory/point',async(ctx,next)=>{  //상벌점 등록 + student테�
     } 
 });
 
-api.get('/dormitory/allpoint',async(ctx,next)=>{ //상벌점 전체 조회-관리자 , 관리자용!
+api.get('/dormitory/allpoint',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //상벌점 전체 조회-관리자 , 관리자용!
     try{
         const allStudentPoint=await points.findAll();
         ctx.status(200);
@@ -68,7 +69,7 @@ api.get('/dormitory/allpoint',async(ctx,next)=>{ //상벌점 전체 조회-관�
     }
 });
 
-api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
+api.get('/dormitory/individualpoint',isLoggedIn,studentLoggedIn,async(ctx,next)=>{  //상벌점 본인 조회-로그인한 본인
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
     const StudentId=decoded.user_id; //토큰에서 로그인한 학생의 user_id 가져오기
@@ -78,7 +79,7 @@ api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조�
                 receiver_id:StudentId
             }
         });
-        
+
         ctx.status(200);
         ctx.body=Studentallstatus;
     }catch(error){
@@ -87,7 +88,7 @@ api.get('/dormitory/individualpoint',async(ctx,next)=>{  //상벌점 본인 조�
     }
 });
 
-api.put('/dormitory/point/:id',async(ctx,next)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
+api.put('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{  // 상벌점 수정 + student테이블의 point에 값 누적, 관리자용!
     const Request = Joi.object().keys({
         giver_id:Joi.integer().required(),
         receiver_id:Joi.integer().required(),
@@ -147,7 +148,7 @@ api.put('/dormitory/point/:id',async(ctx,next)=>{  // 상벌점 수정 + student
 
 });
 
-api.delete('/dormitory/point/:id',async(ctx,next)=>{ //상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
+api.delete('/dormitory/point/:id',isLoggedIn,adminLoggedIn,async(ctx,next)=>{ //상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
     const {id}=ctx.params;
 
     try{
