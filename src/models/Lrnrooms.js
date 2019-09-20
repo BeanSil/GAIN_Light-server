@@ -34,7 +34,7 @@ export const Lrnseat_recommend = (sequelize, DataTypes) => {
             allowNull: false
         },
         rental_time: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             defaultValue: DataTypes.NOW
         }
     });
