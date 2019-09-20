@@ -321,4 +321,42 @@ export const GetRoomByRoomId = async (ctx) => {
 };
 
 export const GetRoomByUserId = async (ctx) => {
+    const Params = Joi.object().keys({
+        user_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const validation = Joi.validate(ctx.params, Params);
+    
+    if (validation.error) {
+        console.log("GetRoomByUserId - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    let roomSearched = await room.findOne({
+        attributes: ['room_no', 'allocation_id', 'user_id', 'is_banned'],
+        group: "room_no",
+        where: {
+            user_id: ctx.params.user_id,
+            year: new Date().getFullYear(),
+            quarter: (new Date().getMonth() + 1) / 3
+        }
+    });
+    
+    if (!roomSearched) {
+        console.log("GetRoomByUserId - 유저를 찾을 수 없음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true,
+        data: roomSearched
+    };
 };
