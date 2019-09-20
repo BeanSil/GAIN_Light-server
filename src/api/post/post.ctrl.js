@@ -1,9 +1,10 @@
 import Joi from 'joi';
-import { user, board,account } from '../../models';
+import { user, board,account, board_comment } from '../../models';
 import { generateToken, decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 export const uploadBoard = async (ctx) => {
@@ -33,32 +34,22 @@ export const uploadBoard = async (ctx) => {
 
     const decoded = await decodeToken(token);
 
-    if(ctx.request.body.kind == 1 || ctx.request.body.kind == "공지사항"){
+    if(ctx.request.body.kind == 1){
         const founded = await account.findOne({
             where : {
                 "user_id" : decoded.user_id
             }
         });
-    console.log(founded.auth)
+        
         if(founded.auth == "학생" || founded.auth == "게스트"){
             console.log("관리자 게시판 작성 에러")
             ctx.status = 400;
             ctx.body = {
-                "error" : "001"
+                "error" : "101"
             }
             return; 
         }
-        await board.create({
-            "user_id" : decoded.user_id,
-            "title" : ctx.request.body.title,
-            "content" : ctx.request.body.content,
-            "is_anonymous" : ctx.request.body.is_anonymous,
-            "kind" : ctx.request.body.kind
-        });
-    
-        ctx.body = "success";
     }
-    else{
         await board.create({
             "user_id" : decoded.user_id,
             "title" : ctx.request.body.title,
@@ -66,8 +57,10 @@ export const uploadBoard = async (ctx) => {
             "is_anonymous" : ctx.request.body.is_anonymous,
             "kind" : ctx.request.body.kind
         });
-    
-        ctx.body = "success";
+
+        ctx.status = 200;
+        ctx.body = decoded.user_id;
+}
     }
     
 
