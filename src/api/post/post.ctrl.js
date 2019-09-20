@@ -4,6 +4,7 @@ import { decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
 import dotenv from 'dotenv';
+import { decode } from 'punycode';
 
 dotenv.config();
 
@@ -77,11 +78,28 @@ export const uploadcomment = async (ctx) => {
         console.log("Register - Joi 형식 에러")
         ctx.status = 400;
         ctx.body = {
-            "error" : "001"
+            "error" : "002"
         }
         return;
     }
 
+    if(ctx.request.body.parent_id != null){
+        const a = await board_comment.findOne({
+            where : {
+                "comment_id" : ctx.request.body.parent_id
+            }
+        });
+        console.log(a)
+        if(a.parent_id != null){
+            console.log("parent_id exist")
+            ctx.status = 405;
+            ctx.body = {
+                "error" : "002"
+            }
+            return;
+        }
+    }
+    
     const token = ctx.header.token;
 
     const decoded = await decodeToken(token);
@@ -92,6 +110,7 @@ export const uploadcomment = async (ctx) => {
         "parent_id" : ctx.request.body.parent_id,
         "content" : ctx.request.body.content
     });
+    
     ctx.status = 200;
     ctx.body = decoded.user_id;
 }
@@ -99,6 +118,7 @@ export const uploadcomment = async (ctx) => {
 export const getBoard = async (ctx) => {
 
     const kind = ctx.query.kind;
+    const board_id = ctx.query.board_id;
 
     const getboard = await board.findAll({
         where : {
@@ -107,6 +127,22 @@ export const getBoard = async (ctx) => {
     });
 
     ctx.body = getboard;
+
+    const getcomment = await board_comment.findAll({
+        where : {
+            "board_id" : board_id
+        }
+    });
+
+    ctx.body = getcomment;
+
+    const parentcomment = await board_comment.findAll({
+        where : {
+            "parent_id" : null
+        }
+    });
+
+    ctx.body = parentcomment;
 
     let needboard = [];
     for(var i in getboard){
@@ -127,13 +163,27 @@ export const getBoard = async (ctx) => {
                 "createdAt" : getboard[i].createdAt
             });
         }
-        
     }
 
-    ctx.status = 200;
-    ctx.body = {
-        "list" : needboard
+    const token = ctx.header.token;
+
+    const decoded = await decodeToken(token);
+
+    let soncomment = [];
+    for(var i in parentcomment){
+        soncomment.push({
+            "comment_id" : parentcomment[i].comment_id,
+            "user_id" : decoded.user_id,
+            "content" : parentcomment[i].content,
+            "created_at" : parentcomment[i].created_at
+        })
     }
+
+    ctx.body = soncomment;
+    // ctx.status = 200;
+    // ctx.body = {
+    //     "list" : needboard
+    // }
 }
 
 export const board_res = async (ctx) => {
@@ -150,7 +200,7 @@ export const board_res = async (ctx) => {
         console.log("Register - Joi 형식 에러")
         ctx.status = 400;
         ctx.body = {
-            "error" : "001"
+            "error" : "003"
         }
         return;
     }
@@ -165,6 +215,7 @@ export const board_res = async (ctx) => {
         "likability" : ctx.request.body.likability
     });
 
+    ctx.status = 200;
     ctx.body = "success";
 }
 
@@ -182,7 +233,7 @@ export const board_com_res = async (ctx) => {
         console.log("Register - Joi 형식 에러")
         ctx.status = 400;
         ctx.body = {
-            "error" : "001"
+            "error" : "004"
         }
         return;
     }
@@ -198,5 +249,6 @@ export const board_com_res = async (ctx) => {
     
     });
 
+    ctx.status = 200;
     ctx.body = "success";
 }
