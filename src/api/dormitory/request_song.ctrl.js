@@ -58,3 +58,64 @@ export const SongRequest = async (ctx) => {
     }
 }
 
+export const SongList = async (ctx) => {
+    
+    const user = await decodeToken(ctx.header.token);
+
+    if(!user) {
+        console.log(`SongList - 존재하지 않는 유저입니다.`);
+
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "some errorcode"
+        }
+        return;
+    }
+
+    //JSON 배열 만들기
+    const userList = await req_song.findAll({
+        where : {
+            user_id : user.user_id
+        }
+    });
+
+    let userSongArray = [];
+
+    for(var i in userList) {
+        const record = {
+            song_id : userList[i].rs_id,
+            song_name : userList[i].title,
+            singer_name : userList[i].artist,
+            youtube_url : userList[i].url,
+            user_id : userList[i].user_id,
+            status : userList[i].status,
+            created_at : userList[i].created_at
+        }
+        userSongArray.push(record);
+    }
+
+    const list = await req_song.findAll();
+
+    let songArray = [];
+
+    for(var i in list) {
+        const record = {
+            song_name : list[i].title,
+            singer_name : list[i].artist,
+            youtube_url : list[i].url,
+            user_id : list[i].user_id,
+            status : list[i].status,
+            created_at : list[i].created_at
+        }
+        songArray.push(record);
+    }
+    
+    console.log(`SongList - 노래신청목록을 반환하였습니다.`)
+
+    ctx.status = 200;
+    ctx.body = {
+        "user_song_list" : userSongArray,
+        "song_list" : songArray
+    }
+
+}
