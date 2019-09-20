@@ -277,6 +277,8 @@ export const GetRooms = async (ctx) => {
     };
 };
 
-export const GetRoom = async (ctx) => {
+export const GetRoomByRoomId = async (ctx) => {
+};
 
+export const GetRoomByUserId = async (ctx) => {
 };
