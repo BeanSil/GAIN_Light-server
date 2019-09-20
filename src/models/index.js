@@ -7,6 +7,7 @@ import { Teacher } from './Teacher';
 import { Guest } from './Guest';
 import { Board } from './Board';
 import {Board_comment} from './Board_comment';
+import {Board_likability} from './Board_likability';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['gain'];
 
@@ -23,5 +24,6 @@ const teacher = Teacher(sequelize, Sequelize);
 const guest = Guest(sequelize, Sequelize);
 const board = Board(sequelize, Sequelize);
 const board_comment = Board_comment(sequelize,Sequelize);
+const board_likability = Board_likability(sequelize,Sequelize);
 
-export { sequelize, Sequelize, account, student, teacher, guest, board, board_comment };
+export { sequelize, Sequelize, account, student, teacher, guest, board, board_comment, board_likability };
