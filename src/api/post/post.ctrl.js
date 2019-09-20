@@ -1,5 +1,5 @@
 import Joi from 'joi';
-import { board,account, board_comment, board_likability} from '../../models';
+import { board,account, board_comment, board_likability, board_com_likability} from '../../models';
 import { decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
@@ -168,6 +168,39 @@ export const board_res = async (ctx) => {
         "board_id" : ctx.request.body.board_id,
         "user_id" : decoded.user_id,
         "likability" : ctx.request.body.likability
+    });
+
+    ctx.body = "success";
+}
+
+export const board_com_res = async (ctx) => {
+
+    const uploadBoard_com_res = Joi.object().keys({
+        comment_id : Joi.number().required(),
+        user_id : Joi.number().required(),
+        likability : Joi.number().required()
+    });
+
+    const result = Joi.validate(ctx.request.body, uploadBoard_com_res);
+
+    if(result.error) {
+        console.log("Register - Joi 형식 에러")
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        }
+        return;
+    }
+
+    const token = ctx.header.token;
+
+    const decoded = await decodeToken(token);
+
+    await board_com_likability.create({
+       "comment_id" : ctx.request.body.comment_id,
+       "user_id" : decoded.user_id,
+       "likability" : ctx.request.body.likability
+    
     });
 
     ctx.body = "success";
