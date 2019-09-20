@@ -61,8 +61,37 @@ export const uploadBoard = async (ctx) => {
         ctx.status = 200;
         ctx.body = decoded.user_id;
 }
-    }
-    
 
-    
+export const uploadcomment = async (ctx) => {
+
+        const Uploadboard_Comment = Joi.object().keys({
+        board_id : Joi.number().required(),
+        user_id : Joi.number().required(),
+        parent_id : Joi.number(),
+        content : Joi.string().max(65535).required()
+    });
+
+    const result = Joi.validate(ctx.request.body, Uploadboard_Comment);
+
+    if(result.error) {
+        console.log("Register - Joi 형식 에러")
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        }
+        return;
+    }
+
+    const token = ctx.header.token;
+
+    const decoded = await decodeToken(token);
+
+    await board_comment.create({
+        "board_id" : ctx.request.body.board_id,
+        "user_id" : decoded.user_id,
+        "parent_id" : ctx.request.body.parent_id,
+        "content" : ctx.request.body.content
+    });
+    ctx.status = 200;
+    ctx.body = decoded.user_id;
 }
