@@ -25,8 +25,6 @@ export const ApplyNextRoom = async (ctx) => {
         return;
     }
     
-    await roomApply.sync();
-    
     const AppliedExist = await roomApply.findAll({
         where: {
             [Op.or]: [{
@@ -265,7 +263,7 @@ export const SetRoom = async (ctx) => {
 
 export const GetRooms = async (ctx) => {
     let rooms = await room.findAll({
-        attributes: ['room_no', [fn('GROUP_CONCAT', col('allocation_id')), 'allocation_ids'], [fn('GROUP_CONCAT', col('user_id')), 'user_ids'], [fn('GROUP_CONCAT', col('is_banned')), 'is_banneds']], //'GROUP_CONCAT(allocation_id, user_id, is_banned)'],
+        attributes: ['room_no', [fn('GROUP_CONCAT', col('allocation_id')), 'allocation_ids'], [fn('GROUP_CONCAT', col('user_id')), 'user_ids'], [fn('GROUP_CONCAT', col('is_banned')), 'is_banneds']],
         group: "room_no",
         where: {
             year: new Date().getFullYear(),
