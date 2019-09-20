@@ -287,5 +287,36 @@ export const DeleteBoard = async (ctx) => {
     }
 };
 
-export const DeleteComment = (ctx) => {
+export const DeleteComment = async (ctx) => {
+    // TODO: 유저 권한 확인
+    
+    const commentIdVerify = Joi.object().keys({
+        comment_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const verification = Joi.validate(ctx.params, commentIdVerify);
+    
+    if (verification.error) {
+        console.log("DeleteComment - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    const result = await board_comment.destroy({where: {comment_id: ctx.params.comment_id}});
+    
+    if (!result) {
+        console.log("DeleteComment - 대상이 존재하지 않음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true
+    }
 };
