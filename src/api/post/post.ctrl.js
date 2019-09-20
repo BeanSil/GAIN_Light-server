@@ -136,11 +136,6 @@ export const getBoard = async (ctx) => {
     }
 }
 
-export const getComment = async (ctx) => {
-
-
-}
-
 export const board_res = async (ctx) => {
 
     const uploadboard_res = Joi.object().keys({
