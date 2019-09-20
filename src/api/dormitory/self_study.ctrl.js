@@ -1,7 +1,6 @@
-import { lrnrooms, lrnseats, lrnseat_recommend } from "models"
-import { decodeToken } from "../../lib/token";
+import { lrnrooms, lrnseats, lrnseat_recommend, account } from "models"
+import { decodeToken } from "lib/token";
 import Joi from "joi"
-import { account } from "../../models";
 
 
 export const LrnReserve = async (ctx) =>{
