@@ -1,5 +1,5 @@
 export const Lrnrooms = (sequelize, DataTypes) => {
-    return sequelize.define('Lrnrooms', {
+    return sequelize.define('lrnroom', {
         lrnroom_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -18,7 +18,7 @@ export const Lrnrooms = (sequelize, DataTypes) => {
 };
 
 export const Lrnseat_recommend = (sequelize, DataTypes) => {
-    return sequelize.define('Lrnseat_recommend', {
+    return sequelize.define('lrnseat_recommend', {
         sr_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -41,7 +41,7 @@ export const Lrnseat_recommend = (sequelize, DataTypes) => {
 };
 
 export const Lrnseats = (sequelize, DataTypes) => {
-    return sequelize.define('Lrnseats', {
+    return sequelize.define('lrnseat', {
         lrnseat_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
