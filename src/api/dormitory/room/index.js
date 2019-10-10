@@ -1,5 +1,5 @@
 import Router from 'koa-router';
-import {ApplyNextRoom, SetRoom, UpdateNextRoom, GetRooms, GetRoomByRoomId, GetRoomByUserId, GetApplication, GetApplicationByUserId, GetApplications, DeleteApplication, UserVerification} from './room.ctrl';
+import {SetRoom, GetRooms, GetRoomByRoomId, GetRoomByUserId, UserVerification} from './room.ctrl';
 
 import apply from './apply'
 
