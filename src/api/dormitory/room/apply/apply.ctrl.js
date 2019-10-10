@@ -1,9 +1,7 @@
 import Joi from 'joi';
 import {col, fn, Op} from 'sequelize'
 
-import {account, student, room, roomApply} from '../../../models';
-
-import { decodeToken } from '../../../lib/token.js';
+import {account, student, room, roomApply} from '../../../../models';
 
 // .env 파일의 환경 변수 불러오기
 import dotenv from 'dotenv';
@@ -562,27 +560,4 @@ export const GetRoomByUserId = async (ctx) => {
         is_succeed: true,
         data: roomSearched
     };
-};
-
-export const UserVerification = async (ctx, next) => {
-    const decodedUser = ctx.request.user;
-    let verification = await account.findOne({where: {user_id: decodedUser.user_id}});
-    
-    if (!verification.length) {
-        ctx.request.user.authority = 0;
-    }
-    switch (verification.auth) {
-        case "게스트":
-            ctx.request.user.authority = 1;
-            break;
-        case "학생":
-            ctx.request.user.authority = 2;
-            break;
-        case "선생님":
-            ctx.request.user.authority = 3;
-            break;
-        default:
-            ctx.request.user.authority = 0;
-    }
-    return next();
 };
