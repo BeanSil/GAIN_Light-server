@@ -245,6 +245,12 @@ export const GetRoomByUserId = async (ctx) => {
 };
 
 export const UserVerification = async (ctx, next) => {
+    const token = ctx.cookies.get('access_token'); // ctx 에서 access_token 을 읽어옵니다
+    if(!token){
+        ctx.request.user.authority = 0;
+        return next();
+    } // 토큰이 없으면 바로 다음 작업을 진행합니다.
+    
     const decodedUser = ctx.request.user;
     let verification = await account.findOne({where: {user_id: decodedUser.user_id}});
     
