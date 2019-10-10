@@ -5,11 +5,11 @@ import { Account } from './Account';
 import { Student } from './Student';
 import { Teacher } from './Teacher';
 import { Guest } from './Guest';
-import { Board } from './Board';
-import {Board_comment} from './Board_comment';
-import {Board_likability} from './Board_likability';
-import {Board_com_likability} from './Board_com_likability';
-import {Board_data} from './Board_data';
+import { Board } from './board';
+import {Board_comment} from './board_comment';
+import {Board_likability} from './board_likability';
+import {Board_com_likability} from './board_com_likability';
+import {Board_data} from './board_data';
 import { Room, RoomApply } from './Room';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['gain'];
