@@ -4,7 +4,6 @@ import { decodeToken }from '../../lib/token.js';
 
 //환경변수 설정
 import dotenv from 'dotenv';
-import { decode } from 'punycode';
 
 dotenv.config();
 
@@ -24,11 +23,11 @@ export const uploadBoard = async (ctx) => {
      // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
 
      if(result.error) {
-        console.log("Register - Joi 형식 에러")
+        console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "001"
-        }
+        };
         return;
     }
     
@@ -48,7 +47,7 @@ export const uploadBoard = async (ctx) => {
             ctx.status = 400;
             ctx.body = {
                 "error" : "101"
-            }
+            };
             return; 
         }
     }
@@ -63,7 +62,7 @@ export const uploadBoard = async (ctx) => {
 
         ctx.status = 200;
         ctx.body = decoded.user_id;
-}
+};
 
 // 댓글 업로드
 export const uploadcomment = async (ctx) => {
@@ -78,11 +77,11 @@ export const uploadcomment = async (ctx) => {
     const result = Joi.validate(ctx.request.body, Uploadboard_Comment);
 
     if(result.error) {
-        console.log("Register - Joi 형식 에러")
+        console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "002"
-        }
+        };
         return;
     }
 
@@ -93,13 +92,13 @@ export const uploadcomment = async (ctx) => {
                 "comment_id" : ctx.request.body.parent_id
             }
         });
-        console.log(a)
+        console.log(a);
         if(a.parent_id != null){
-            console.log("parent_id exist")
+            console.log("parent_id exist");
             ctx.status = 405;
             ctx.body = {
                 "error" : "002"
-            }
+            };
             return;
         }
     }
@@ -117,7 +116,7 @@ export const uploadcomment = async (ctx) => {
     
     ctx.status = 200;
     ctx.body = decoded.user_id;
-}
+};
 
 // 게시판 가져오기
 export const getBoard = async (ctx) => {
@@ -163,7 +162,7 @@ export const getBoard = async (ctx) => {
                 "content" : getboard[i].content,
                 "createdAt" : getboard[i].createdAt
             });
-        }else{
+        } else {
             needboard.push({
                 "board_id" : getboard[i].board_id,
                 "user_id" : getboard[i].user_id,
@@ -174,8 +173,8 @@ export const getBoard = async (ctx) => {
         }
     }
    
-    for(var i in parentcomment){
-        parentcomment[i].dataValues.sons = []
+    for(let i in parentcomment){
+        parentcomment[i].dataValues.sons = [];
         const soncomment = await board_comment.findAll({
             where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
                 "parent_id" : parentcomment[i].comment_id
@@ -190,7 +189,7 @@ export const getBoard = async (ctx) => {
     console.log(parentcomment);
     ctx.body = parentcomment;
 
-}
+};
 
 // 게시판 좋아요
 export const board_res = async (ctx) => {
@@ -204,11 +203,11 @@ export const board_res = async (ctx) => {
     const result = Joi.validate(ctx.request.body, uploadboard_res);
 
     if(result.error) {
-        console.log("Register - Joi 형식 에러")
+        console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "003"
-        }
+        };
         return;
     }
 
@@ -224,7 +223,7 @@ export const board_res = async (ctx) => {
 
     ctx.status = 200;
     ctx.body = "success";
-}
+};
 
 // 댓글 좋아요
 export const board_com_res = async (ctx) => {
@@ -238,11 +237,11 @@ export const board_com_res = async (ctx) => {
     const result = Joi.validate(ctx.request.body, uploadBoard_com_res);
 
     if(result.error) {
-        console.log("Register - Joi 형식 에러")
+        console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "004"
-        }
+        };
         return;
     }
 
@@ -343,11 +342,11 @@ export const BoardData = async (ctx) => {
      // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
 
      if(result.error) {
-        console.log("Register - Joi 형식 에러")
+        console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
             "error" : "001"
-        }
+        };
         return;
     }
 
