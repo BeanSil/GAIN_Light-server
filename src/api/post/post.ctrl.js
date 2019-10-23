@@ -8,6 +8,7 @@ import { decode } from 'punycode';
 
 dotenv.config();
 
+// 게시판 업로드
 export const uploadBoard = async (ctx) => {
 
     const UploadPost = Joi.object().keys({
@@ -35,14 +36,14 @@ export const uploadBoard = async (ctx) => {
 
     const decoded = await decodeToken(token);
 
-    if(ctx.request.body.kind == 1){
-        const founded = await account.findOne({
+    if(ctx.request.body.kind == 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면 
+        const founded = await account.findOne({  // user_id를 불러와 
             where : {
                 "user_id" : decoded.user_id
             }
         });
         
-        if(founded.auth == "학생" || founded.auth == "게스트"){
+        if(founded.auth == "학생" || founded.auth == "게스트"){  // 선생님인지 확인
             console.log("관리자 게시판 작성 에러")
             ctx.status = 400;
             ctx.body = {
@@ -51,6 +52,7 @@ export const uploadBoard = async (ctx) => {
             return; 
         }
     }
+    // 공지사항 게시판 작성이 아니거나, user_id가 선생님이 공지사항을 작성한다면 게시판 create
         await board.create({
             "user_id" : decoded.user_id,
             "title" : ctx.request.body.title,
@@ -63,6 +65,7 @@ export const uploadBoard = async (ctx) => {
         ctx.body = decoded.user_id;
 }
 
+// 댓글 업로드
 export const uploadcomment = async (ctx) => {
 
         const Uploadboard_Comment = Joi.object().keys({
@@ -82,6 +85,7 @@ export const uploadcomment = async (ctx) => {
         }
         return;
     }
+
 
     if(ctx.request.body.parent_id != null){
         const a = await board_comment.findOne({
@@ -115,11 +119,13 @@ export const uploadcomment = async (ctx) => {
     ctx.body = decoded.user_id;
 }
 
+// 게시판 가져오기
 export const getBoard = async (ctx) => {
 
     const kind = ctx.query.kind;
     const board_id = ctx.query.board_id;
 
+    //게시판 종류 가져오기 (ex: 공지사항, 자료실, 일반게시판)
     const getboard = await board.findAll({
         where : {
             "kind" : kind
@@ -128,6 +134,7 @@ export const getBoard = async (ctx) => {
 
     ctx.body = getboard;
 
+    // 게시판에 해당하는 내용 불러오기
     const getcomment = await board_comment.findAll({
         where : {
             "board_id" : board_id
@@ -136,6 +143,7 @@ export const getBoard = async (ctx) => {
 
     ctx.body = getcomment;
 
+    // 부모 댓글 불러오기
     const parentcomment = await board_comment.findAll({
         where : {
             "parent_id" : null
@@ -146,7 +154,8 @@ export const getBoard = async (ctx) => {
 
     let needboard = [];
     for(var i in getboard){
-        if(getboard[i].is_anonymous == true){
+        if(getboard[i].is_anonymous == true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
+            // 게시판에 push로 내용 추가
             needboard.push({
                 "board_id" : getboard[i].board_id,
                 "user_id" : " ",
@@ -168,13 +177,12 @@ export const getBoard = async (ctx) => {
     for(var i in parentcomment){
         parentcomment[i].dataValues.sons = []
         const soncomment = await board_comment.findAll({
-            where : {
+            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
                 "parent_id" : parentcomment[i].comment_id
             }
         });
 
-
-        for (let j in soncomment) {
+        for (let j in soncomment) {//자식댓글 push로 추가
             parentcomment[i].dataValues.sons.push(soncomment[j]);
         }
     }
@@ -184,6 +192,7 @@ export const getBoard = async (ctx) => {
 
 }
 
+// 게시판 좋아요
 export const board_res = async (ctx) => {
 
     const uploadboard_res = Joi.object().keys({
@@ -217,6 +226,7 @@ export const board_res = async (ctx) => {
     ctx.body = "success";
 }
 
+// 댓글 좋아요
 export const board_com_res = async (ctx) => {
 
     const uploadBoard_com_res = Joi.object().keys({
@@ -244,13 +254,13 @@ export const board_com_res = async (ctx) => {
        "comment_id" : ctx.request.body.comment_id,
        "user_id" : decoded.user_id,
        "likability" : ctx.request.body.likability
-    
     });
 
     ctx.status = 200;
     ctx.body = "success";
 };
 
+//게시판 삭제
 export const DeleteBoard = async (ctx) => {
     // TODO: 유저 권한 확인
     
@@ -285,6 +295,7 @@ export const DeleteBoard = async (ctx) => {
     }
 };
 
+// 댓글 삭제
 export const DeleteComment = async (ctx) => {
     // TODO: 유저 권한 확인
     
@@ -319,6 +330,7 @@ export const DeleteComment = async (ctx) => {
     }
 };
 
+// 게시판 정보
 export const BoardData = async (ctx) => {
 
     const Uploadboard_data = Joi.object().keys({
