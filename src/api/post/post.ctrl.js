@@ -188,7 +188,6 @@ export const GetPost = async (ctx) => {
 export const board_res = async (ctx) => {
 
     const uploadboard_res = Joi.object().keys({
-        board_id : Joi.number().required(),
         user_id : Joi.number().required(),
         likability : Joi.number()
     });
@@ -209,13 +208,12 @@ export const board_res = async (ctx) => {
     const decoded = await decodeToken(token);
 
     await board_likability.create({
-        "board_id" : ctx.request.body.board_id,
+        "board_id" : ctx.params.board_id,
         "user_id" : decoded.user_id,
         "likability" : ctx.request.body.likability
     });
 
     ctx.status = 200;
-    ctx.body = "success";
 };
 
 // 댓글 좋아요
@@ -244,7 +242,7 @@ export const board_com_res = async (ctx) => {
 
     // 좋아요를 누르면 좋아요를 누른 내용 id와 좋아요를 누른 사용자와, '좋아요' 문자 db create
     await board_com_likability.create({
-       "comment_id" : ctx.request.body.comment_id,
+       "comment_id" : ctx.params.comment_id,
        "user_id" : decoded.user_id,
        "likability" : ctx.request.body.likability
     });
