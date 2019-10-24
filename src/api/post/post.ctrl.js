@@ -320,11 +320,10 @@ export const DeleteComment = async (ctx) => {
     }
 };
 
-// 게시판 정보
+// 첨부 자료 정보
 export const BoardData = async (ctx) => {
 
     const Uploadboard_data = Joi.object().keys({
-        board_id : Joi.number().required(),
         upload_url : Joi.string().max(62525)
     });
 
@@ -342,10 +341,10 @@ export const BoardData = async (ctx) => {
     }
 
         await board_data.create({
-            "board_id" : ctx.request.body.board_id,
+            "board_id" : ctx.params.board_id,
             "upload_url" : ctx.request.body.upload_url
         });
 
         ctx.status = 200;
-        ctx.body = ctx.request.body.board_id;
+        ctx.body = ctx.params.board_id;
 }
