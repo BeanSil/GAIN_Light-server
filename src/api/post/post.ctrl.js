@@ -65,10 +65,9 @@ export const uploadBoard = async (ctx) => {
 };
 
 // 댓글 업로드
-export const uploadcomment = async (ctx) => {
+export const uploadComment = async (ctx) => {
 
         const Uploadboard_Comment = Joi.object().keys({
-        board_id : Joi.number().required(),
         user_id : Joi.number().required(),
         parent_id : Joi.number(),
         content : Joi.string().max(65535).required()
@@ -108,7 +107,7 @@ export const uploadcomment = async (ctx) => {
     const decoded = await decodeToken(token);
 
     await board_comment.create({
-        "board_id" : ctx.request.body.board_id,
+        "board_id" : ctx.params.board_id,
         "user_id" : decoded.user_id,
         "parent_id" : ctx.request.body.parent_id,
         "content" : ctx.request.body.content
@@ -119,10 +118,10 @@ export const uploadcomment = async (ctx) => {
 };
 
 // 게시판 가져오기
-export const getBoard = async (ctx) => {
+export const GetPost = async (ctx) => {
 
     const kind = ctx.query.kind;
-    const board_id = ctx.query.board_id;
+    const board_id = ctx.params.board_id;
 
     //게시판 종류 가져오기 (ex: 공지사항, 자료실, 일반게시판)
     const getboard = await board.findAll({
@@ -131,8 +130,6 @@ export const getBoard = async (ctx) => {
         }
     });
 
-    ctx.body = getboard;
-
     // 게시판에 해당하는 내용 불러오기
     const getcomment = await board_comment.findAll({
         where : {
@@ -140,16 +137,12 @@ export const getBoard = async (ctx) => {
         }
     });
 
-    ctx.body = getcomment;
-
     // 부모 댓글 불러오기
     const parentcomment = await board_comment.findAll({
         where : {
             "parent_id" : null
         }
     });
-
-    ctx.body = parentcomment;
 
     let needboard = [];
     for(let i in getboard){
