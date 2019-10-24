@@ -1,18 +1,17 @@
 import Router from 'koa-router';
 
-import {uploadBoard, uploadcomment, getBoard, board_res, board_com_res, DeletePost, DeleteComment, BoardData} from './post.ctrl';
+import {uploadBoard, uploadComment, getBoard, board_res, board_com_res, DeletePost, DeleteComment, BoardData} from './post.ctrl';
 import auth from '../auth';
 
 const post = new Router();
 
-post.get('/getboard',getBoard);
 post.get('/board',getBoard); // new
 post.post('/board',uploadBoard);
 // post.get('/board/:board_id', GetPost); // TODO: Make
 // post.put('/board/:board_id', UpdatePost); // TODO: Make
 post.delete('/board/:board_id', DeletePost);
-post.post('/comment',uploadcomment);
-post.post('/comment/:board_id',uploadcomment); // new
+
+post.post('/comment/:board_id',uploadComment); // new
 // post.get('/comment/:board_id/:comment_id', DeleteComment); // TODO: Make
 // post.put('/comment/:board_id/:comment_id', DeleteComment); // TODO: Make
 // post.delete('/comment/:board_id/:comment_id', DeleteComment);  // new
