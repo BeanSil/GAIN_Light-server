@@ -249,6 +249,7 @@ export const board_com_res = async (ctx) => {
 
     const decoded = await decodeToken(token);
 
+    // 좋아요를 누르면 좋아요를 누른 내용 id와 좋아요를 누른 사용자와, '좋아요' 문자 db create
     await board_com_likability.create({
        "comment_id" : ctx.request.body.comment_id,
        "user_id" : decoded.user_id,
@@ -256,7 +257,6 @@ export const board_com_res = async (ctx) => {
     });
 
     ctx.status = 200;
-    ctx.body = "success";
 };
 
 //게시판 삭제
