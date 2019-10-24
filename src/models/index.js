@@ -11,6 +11,7 @@ import {Board_likability} from './board_likability';
 import {Board_com_likability} from './board_com_likability';
 import {Board_data} from './board_data';
 import { Room, RoomApply } from './Room';
+import { Req_song } from './req_songs';
 
 const config = require(path.join(__dirname, '..', 'config', 'dbconfig.json'))['gain'];
 
