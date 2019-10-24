@@ -35,15 +35,15 @@ export const uploadBoard = async (ctx) => {
 
     const decoded = await decodeToken(token);
 
-    if(ctx.request.body.kind == 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면 
+    if(ctx.request.body.kind === 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면
         const founded = await account.findOne({  // user_id를 불러와 
             where : {
                 "user_id" : decoded.user_id
             }
         });
         
-        if(founded.auth == "학생" || founded.auth == "게스트"){  // 선생님인지 확인
-            console.log("관리자 게시판 작성 에러")
+        if(founded.auth === "학생" || founded.auth === "게스트"){  // 선생님인지 확인
+            console.log("관리자 게시판 작성 에러");
             ctx.status = 400;
             ctx.body = {
                 "error" : "101"
@@ -152,8 +152,8 @@ export const getBoard = async (ctx) => {
     ctx.body = parentcomment;
 
     let needboard = [];
-    for(var i in getboard){
-        if(getboard[i].is_anonymous == true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
+    for(let i in getboard){
+        if(getboard[i].is_anonymous === true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
             // 게시판에 push로 내용 추가
             needboard.push({
                 "board_id" : getboard[i].board_id,
@@ -260,7 +260,7 @@ export const board_com_res = async (ctx) => {
 };
 
 //게시판 삭제
-export const DeleteBoard = async (ctx) => {
+export const DeletePost = async (ctx) => {
     // TODO: 유저 권한 확인
     
     const boardIdVerify = Joi.object().keys({
