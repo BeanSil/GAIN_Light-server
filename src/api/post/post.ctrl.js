@@ -64,6 +64,64 @@ export const uploadBoard = async (ctx) => {
         ctx.body = decoded.user_id;
 };
 
+// 게시판 업데이트
+export const UpdatePost = async (ctx) => {
+    
+    const UpdatePost = Joi.object().keys({
+        user_id : Joi.number().required(),
+        title : Joi.string().max(255).required(),
+        content : Joi.string().max(65535).required(),
+        is_anonymous : Joi.boolean(),
+        kind : Joi.number().required()
+    });
+    
+    const result = Joi.validate(ctx.request.body, UpdatePost);
+    
+    // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
+    
+    if (result.error) {
+        console.log("Register - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    const token = ctx.header.token;
+    
+    const decoded = await decodeToken(token);
+    
+    if(ctx.request.body.kind === 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면
+        const founded = await account.findOne({  // user_id를 불러와
+            where : {
+                "user_id" : decoded.user_id
+            }
+        });
+        
+        if(founded.auth === "학생" || founded.auth === "게스트"){  // 선생님인지 확인
+            console.log("관리자 게시판 작성 에러");
+            ctx.status = 400;
+            ctx.body = {
+                "error" : "101"
+            };
+            return;
+        }
+    }
+    // 공지사항 게시판 작성이 아니거나, user_id가 선생님이 공지사항을 작성한다면 게시판 update
+    await board.updateOne({
+        "user_id" : decoded.user_id,
+        "title" : ctx.request.body.title,
+        "content" : ctx.request.body.content,
+        "is_anonymous" : ctx.request.body.is_anonymous,
+        "kind" : ctx.request.body.kind
+    }, {
+        where: ctx.params.board_id
+    });
+    
+    ctx.status = 200;
+    ctx.body = decoded.user_id;
+};
 // 댓글 업로드
 export const uploadComment = async (ctx) => {
 
@@ -347,4 +405,4 @@ export const BoardData = async (ctx) => {
 
         ctx.status = 200;
         ctx.body = ctx.params.board_id;
-}
+};
