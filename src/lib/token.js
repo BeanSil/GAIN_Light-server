@@ -31,10 +31,14 @@ const jwtSecret = process.env.JWT_KEY;
 export const decodeToken = (token) => {
     return new Promise(
         (resolve, reject) => {
-            jwt.verify(token, jwtSecret, (error, decoded) => {
-                if(error) reject(error);
-                resolve(decoded);
-            });
+            try {
+                jwt.verify(token, jwtSecret, (error, decoded) => {
+                    if(error) reject(error);
+                    resolve(decoded);
+                });
+            } catch (e) {
+                reject(new Error("jwt not provided"))
+            }
         }
     );
 }
