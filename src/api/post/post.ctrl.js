@@ -7,6 +7,14 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+export const GetBoardList = async (ctx) => {
+    await board.findOne({
+        where: {
+            kind: ctx.params.kind
+        }
+    })
+};
+
 // 게시판 업로드
 export const uploadBoard = async (ctx) => {
 
@@ -182,49 +190,42 @@ export const GetPost = async (ctx) => {
     const board_id = ctx.params.board_id;
 
     //게시판 종류 가져오기 (ex: 공지사항, 자료실, 일반게시판)
-    const getboard = await board.findAll({
+    const getboard = await board.findOne({
         where : {
+            "board_id": board_id,
             "kind" : kind
-        }
-    });
-
-    // 게시판에 해당하는 내용 불러오기
-    const getcomment = await board_comment.findAll({
-        where : {
-            "board_id" : board_id
         }
     });
 
     // 부모 댓글 불러오기
     const parentcomment = await board_comment.findAll({
         where : {
+            "board_id": board_id,
             "parent_id" : null
         }
     });
 
     let needboard = [];
-    for(let i in getboard){
-        if(getboard[i].is_anonymous === true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
-            // 게시판에 push로 내용 추가
-            needboard.push({
-                "board_id" : getboard[i].board_id,
-                "user_id" : " ",
-                "title" : getboard[i].title,
-                "content" : getboard[i].content,
-                "createdAt" : getboard[i].createdAt
-            });
-        } else {
-            needboard.push({
-                "board_id" : getboard[i].board_id,
-                "user_id" : getboard[i].user_id,
-                "title" : getboard[i].title,
-                "content" : getboard[i].content,
-                "createdAt" : getboard[i].createdAt
-            });
-        }
+    if(getboard.is_anonymous === true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
+        // 게시판에 push로 내용 추가
+        needboard.push({
+            "board_id" : getboard.board_id,
+            "user_id" : "Anonymous",
+            "title" : getboard.title,
+            "content" : getboard.content,
+            "createdAt" : getboard.createdAt
+        });
+    } else {
+        needboard.push({
+            "board_id" : getboard.board_id,
+            "user_id" : getboard.user_id,
+            "title" : getboard.title,
+            "content" : getboard.content,
+            "createdAt" : getboard.createdAt
+        });
     }
    
-    for(let i in parentcomment){
+    for (let i in parentcomment){
         parentcomment[i].dataValues.sons = [];
         const soncomment = await board_comment.findAll({
             where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
@@ -237,7 +238,6 @@ export const GetPost = async (ctx) => {
         }
     }
 
-    console.log(parentcomment);
     ctx.body = parentcomment;
 
 };
