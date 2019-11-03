@@ -8,11 +8,20 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const GetBoardList = async (ctx) => {
-    await board.findOne({
+    console.log(ctx.params.kind);
+    let boardList = await board.findAll({
+        attributes: ["title", "user_id", "is_anonymous"],
         where: {
-            kind: ctx.params.kind
+            kind: ctx.params.kind * 1
         }
-    })
+    });
+    
+    for (let i in boardList) {
+        if (boardList[i].is_anonymous) boardList[i].user_id = null;
+        boardList[i].is_anonymous = undefined;
+        
+    }
+    ctx.body = {result: boardList}
 };
 
 // 게시판 업로드

@@ -10,13 +10,13 @@ import {
     DeletePost,
     DeleteComment,
     BoardData,
-    GetAllComment
+    GetAllComment, GetBoardList
 } from './post.ctrl';
 import auth from '../auth';
 
 const post = new Router();
 
-// post.get('/board/:kind',GetBoardList); // TODO: Make
+post.get('/board/:kind',GetBoardList); // TODO: Make
 post.post('/board/:kind',uploadBoard);
 post.get('/board/:kind/:board_id', GetPost);
 post.put('/board/:kind/:board_id', UpdatePost); // TODO: Make
