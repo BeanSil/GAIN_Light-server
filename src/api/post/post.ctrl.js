@@ -238,7 +238,7 @@ export const GetPost = async (ctx) => {
         }
     }
 
-    ctx.body = parentcomment;
+    ctx.body = {contents: { post: needboard, comment: parentcomment }};
 
 };
 
@@ -341,6 +341,33 @@ export const DeletePost = async (ctx) => {
     ctx.body = {
         is_succeed: true
     }
+};
+
+export const GetAllComment = async (ctx) => {
+    const board_id = ctx.params.board_id;
+    
+    // 부모 댓글 불러오기
+    const parentcomment = await board_comment.findAll({
+        where : {
+            "board_id" : board_id,
+            "parent_id" : null
+        }
+    });
+    
+    for (let i in parentcomment){
+        parentcomment[i].dataValues.sons = [];
+        const soncomment = await board_comment.findAll({
+            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
+                "parent_id" : parentcomment[i].comment_id
+            }
+        });
+        
+        for (let j in soncomment) {//자식댓글 push로 추가
+            parentcomment[i].dataValues.sons.push(soncomment[j]);
+        }
+    }
+    
+    ctx.body = parentcomment;
 };
 
 // 댓글 삭제
