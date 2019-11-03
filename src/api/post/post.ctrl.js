@@ -139,10 +139,37 @@ export const UpdatePost = async (ctx) => {
     ctx.status = 200;
     ctx.body = ctx.params.board_id;
 };
+
+// 댓글 가져오기
+export const GetComment = async (ctx) => {
+    let cmt = await board_comment.findOne({
+        where: {
+            comment_id: ctx.params.comment_id,
+            board_id: ctx.params.board_id
+        }
+    });
+    
+    cmt.dataValues.child = [];
+    
+    let childCmt = await board_comment.findAll({
+        where: {
+            parent_id: ctx.params.comment_id
+        }
+    });
+    
+    for (let j in childCmt) {//자식댓글 push로 추가
+        cmt.dataValues.sons.push(childCmt);
+    }
+    
+    ctx.body = {
+        result: cmt
+    };
+};
+
 // 댓글 업로드
 export const uploadComment = async (ctx) => {
 
-        const Uploadboard_Comment = Joi.object().keys({
+    const Uploadboard_Comment = Joi.object().keys({
         user_id : Joi.number().required(),
         parent_id : Joi.number(),
         content : Joi.string().max(65535).required()
@@ -235,7 +262,7 @@ export const GetPost = async (ctx) => {
     }
    
     for (let i in parentcomment){
-        parentcomment[i].dataValues.sons = [];
+        parentcomment[i].dataValues.child = [];
         const soncomment = await board_comment.findAll({
             where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
                 "parent_id" : parentcomment[i].comment_id
