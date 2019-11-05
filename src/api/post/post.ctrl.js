@@ -27,7 +27,12 @@ export const GetBoardList = async (ctx) => {
 
 // 게시판 업로드
 export const uploadBoard = async (ctx) => {
-
+    
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
+    
     const UploadPost = Joi.object().keys({
         user_id : Joi.number().required(),
         title : Joi.string().max(255).required(),
@@ -142,6 +147,11 @@ export const GetPost = async (ctx) => {
 // 게시판 업데이트
 export const UpdatePost = async (ctx) => {
     
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
+    
     const UpdatePost = Joi.object().keys({
         user_id : Joi.number().required(),
         title : Joi.string().max(255).required(),
@@ -200,7 +210,11 @@ export const UpdatePost = async (ctx) => {
 
 // 게시글 삭제
 export const DeletePost = async (ctx) => {
-    // TODO: 유저 권한 확인
+    
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
     
     const boardIdVerify = Joi.object().keys({
         board_id: Joi.string().regex(/^\d+$/).required()
@@ -236,6 +250,11 @@ export const DeletePost = async (ctx) => {
 // 게시글 첨부 자료 (링크) 정보
 export const BoardData = async (ctx) => {
     
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
+    
     const Uploadboard_data = Joi.object().keys({
         upload_url : Joi.string().max(62525)
     });
@@ -264,6 +283,11 @@ export const BoardData = async (ctx) => {
 
 // 게시판 좋아요
 export const board_res = async (ctx) => {
+    
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
     
     const uploadboard_res = Joi.object().keys({
         user_id : Joi.number().required(),
@@ -350,6 +374,10 @@ export const GetComment = async (ctx) => {
 
 // 댓글 업로드
 export const uploadComment = async (ctx) => {
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
 
     const Uploadboard_Comment = Joi.object().keys({
         user_id : Joi.number().required(),
@@ -402,6 +430,11 @@ export const uploadComment = async (ctx) => {
 
 // 댓글 업데이트
 export const UpdateComment = async (ctx) => {
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
+    
     const commentModel = Joi.object().keys({
         user_id : Joi.number().required(),
         parent_id : Joi.number(),
@@ -457,7 +490,11 @@ export const UpdateComment = async (ctx) => {
 
 // 댓글 삭제
 export const DeleteComment = async (ctx) => {
-    // TODO: 유저 권한 확인
+    
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
     
     const commentIdVerify = Joi.object().keys({
         comment_id: Joi.string().regex(/^\d+$/).required()
@@ -492,7 +529,12 @@ export const DeleteComment = async (ctx) => {
 
 // 댓글 좋아요
 export const board_com_res = async (ctx) => {
-
+    
+    if (ctx.request.user === null) {
+        ctx.status = 400;
+        return;
+    }
+    
     const uploadBoard_com_res = Joi.object().keys({
         comment_id : Joi.number().required(),
         user_id : Joi.number().required(),
