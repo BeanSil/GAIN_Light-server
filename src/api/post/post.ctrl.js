@@ -217,8 +217,59 @@ export const uploadComment = async (ctx) => {
     ctx.body = decoded.user_id;
 };
 
+// 댓글 업데이트
 export const UpdateComment = async (ctx) => {
-
+    const commentModel = Joi.object().keys({
+        user_id : Joi.number().required(),
+        parent_id : Joi.number(),
+        content : Joi.string().max(65535).required()
+    });
+    
+    const result = Joi.validate(ctx.request.body, commentModel);
+    
+    if(result.error) {
+        console.log("Register - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    
+    if(ctx.request.body.parent_id !== null){
+        const a = await board_comment.findOne({
+            where : {
+                "comment_id" : ctx.request.body.parent_id
+            }
+        });
+        if(a.parent_id != null){
+            console.log("parent_id exist");
+            ctx.status = 405;
+            ctx.body = {
+                "error" : "002"
+            };
+            return;
+        }
+    }
+    
+    const decoded = ctx.request.user;
+    
+    const temp = await board_comment.update({
+        "user_id" : decoded.user_id,
+        "parent_id" : ctx.request.body.parent_id,
+        "content" : ctx.request.body.content
+    }, {
+        where: {
+            board_id: ctx.params.board_id,
+            comment_id: ctx.params.comment_id
+        }
+    });
+    
+    console.log(temp);
+    
+    ctx.status = 200;
+    ctx.body = decoded.user_id;
 };
 
 // 게시판 가져오기
