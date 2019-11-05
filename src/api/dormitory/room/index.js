@@ -7,8 +7,6 @@ import { jwtMiddleware } from '../../../lib/token.js';
 
 const room = new Router();
 
-room.use(jwtMiddleware);
-
 room.use(UserVerification);
 
 room.use('/apply', apply.routes());
