@@ -31,10 +31,14 @@ const jwtSecret = process.env.JWT_KEY;
 export const decodeToken = (token) => {
     return new Promise(
         (resolve, reject) => {
-            jwt.verify(token, jwtSecret, (error, decoded) => {
-                if(error) reject(error);
-                resolve(decoded);
-            });
+            try {
+                jwt.verify(token, jwtSecret, (error, decoded) => {
+                    if(error) reject(error);
+                    resolve(decoded);
+                });
+            } catch (e) {
+                reject(new Error("jwt not provided"))
+            }
         }
     );
 }
@@ -57,6 +61,7 @@ exports.jwtMiddleware = async (ctx, next) => {
 
     try {
         const decoded = await decodeToken(token); // 토큰을 디코딩 합니다
+        
 
         // 토큰 만료일이 하루밖에 안남으면 토큰을 재발급합니다
         if(Date.now() / 1000 - decoded.iat > 60 * 60 * 24) {
