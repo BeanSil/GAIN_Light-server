@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// 모든 게시글 가져오기
 export const GetBoardList = async (ctx) => {
     console.log(ctx.params.kind);
     let boardList = await board.findAll({
@@ -79,6 +80,65 @@ export const uploadBoard = async (ctx) => {
         ctx.body = decoded.user_id;
 };
 
+// 게시글 가져오기
+export const GetPost = async (ctx) => {
+    
+    const kind = ctx.query.kind;
+    const board_id = ctx.params.board_id;
+    
+    //게시판 종류 가져오기 (ex: 공지사항, 자료실, 일반게시판)
+    const getboard = await board.findOne({
+        where : {
+            "board_id": board_id,
+            "kind" : kind
+        }
+    });
+    
+    // 부모 댓글 불러오기
+    const parentcomment = await board_comment.findAll({
+        where : {
+            "board_id": board_id,
+            "parent_id" : null
+        }
+    });
+    
+    let needboard = [];
+    if(getboard.is_anonymous === true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
+        // 게시판에 push로 내용 추가
+        needboard.push({
+            "board_id" : getboard.board_id,
+            "user_id" : "Anonymous",
+            "title" : getboard.title,
+            "content" : getboard.content,
+            "createdAt" : getboard.createdAt
+        });
+    } else {
+        needboard.push({
+            "board_id" : getboard.board_id,
+            "user_id" : getboard.user_id,
+            "title" : getboard.title,
+            "content" : getboard.content,
+            "createdAt" : getboard.createdAt
+        });
+    }
+    
+    for (let i in parentcomment){
+        parentcomment[i].dataValues.child = [];
+        const soncomment = await board_comment.findAll({
+            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
+                "parent_id" : parentcomment[i].comment_id
+            }
+        });
+        
+        for (let j in soncomment) {//자식댓글 push로 추가
+            parentcomment[i].dataValues.sons.push(soncomment[j]);
+        }
+    }
+    
+    ctx.body = {content: { post: needboard, comment: parentcomment }};
+    
+};
+
 // 게시판 업데이트
 export const UpdatePost = async (ctx) => {
     
@@ -136,6 +196,130 @@ export const UpdatePost = async (ctx) => {
     
     ctx.status = 200;
     ctx.body = ctx.params.board_id;
+};
+
+// 게시글 삭제
+export const DeletePost = async (ctx) => {
+    // TODO: 유저 권한 확인
+    
+    const boardIdVerify = Joi.object().keys({
+        board_id: Joi.string().regex(/^\d+$/).required()
+    });
+    
+    const verification = Joi.validate(ctx.params, boardIdVerify);
+    
+    if (verification.error) {
+        console.log("DeleteBoard - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "002"
+        };
+        return;
+    }
+    
+    const result = await board.destroy({where: {board_id: ctx.params.board_id}});
+    
+    if (!result) {
+        console.log("DeleteBoard - 대상이 존재하지 않음");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    ctx.body = {
+        is_succeed: true
+    }
+};
+
+// 게시글 첨부 자료 (링크) 정보
+export const BoardData = async (ctx) => {
+    
+    const Uploadboard_data = Joi.object().keys({
+        upload_url : Joi.string().max(62525)
+    });
+    
+    const result = Joi.validate(ctx.request.body, Uploadboard_data);
+    
+    // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
+    
+    if(result.error) {
+        console.log("Register - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "001"
+        };
+        return;
+    }
+    
+    await board_data.create({
+        "board_id": ctx.params.board_id,
+        "upload_url": ctx.request.body.upload_url
+    });
+    
+    ctx.status = 200;
+    ctx.body = ctx.params.board_id;
+};
+
+// 게시판 좋아요
+export const board_res = async (ctx) => {
+    
+    const uploadboard_res = Joi.object().keys({
+        user_id : Joi.number().required(),
+        likability : Joi.number()
+    });
+    
+    const result = Joi.validate(ctx.request.body, uploadboard_res);
+    
+    if(result.error) {
+        console.log("Register - Joi 형식 에러");
+        ctx.status = 400;
+        ctx.body = {
+            "error" : "003"
+        };
+        return;
+    }
+    
+    const token = ctx.header.token;
+    
+    const decoded = await decodeToken(token);
+    
+    await board_likability.create({
+        "board_id" : ctx.params.board_id,
+        "user_id" : decoded.user_id,
+        "likability" : ctx.request.body.likability
+    });
+    
+    ctx.status = 200;
+};
+
+// 모든 댓글 가져오기
+export const GetAllComment = async (ctx) => {
+    const board_id = ctx.params.board_id;
+    
+    // 부모 댓글 불러오기
+    const parentcomment = await board_comment.findAll({
+        where : {
+            "board_id" : board_id,
+            "parent_id" : null
+        }
+    });
+    
+    for (let i in parentcomment){
+        parentcomment[i].dataValues.sons = [];
+        const soncomment = await board_comment.findAll({
+            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
+                "parent_id" : parentcomment[i].comment_id
+            }
+        });
+        
+        for (let j in soncomment) {//자식댓글 push로 추가
+            parentcomment[i].dataValues.sons.push(soncomment[j]);
+        }
+    }
+    
+    ctx.body = parentcomment;
 };
 
 // 댓글 가져오기
@@ -272,191 +456,6 @@ export const UpdateComment = async (ctx) => {
     ctx.body = decoded.user_id;
 };
 
-// 게시판 가져오기
-export const GetPost = async (ctx) => {
-
-    const kind = ctx.query.kind;
-    const board_id = ctx.params.board_id;
-
-    //게시판 종류 가져오기 (ex: 공지사항, 자료실, 일반게시판)
-    const getboard = await board.findOne({
-        where : {
-            "board_id": board_id,
-            "kind" : kind
-        }
-    });
-
-    // 부모 댓글 불러오기
-    const parentcomment = await board_comment.findAll({
-        where : {
-            "board_id": board_id,
-            "parent_id" : null
-        }
-    });
-
-    let needboard = [];
-    if(getboard.is_anonymous === true){ // 로그아웃된 상태라면 작성자 즉, user_id가 공백
-        // 게시판에 push로 내용 추가
-        needboard.push({
-            "board_id" : getboard.board_id,
-            "user_id" : "Anonymous",
-            "title" : getboard.title,
-            "content" : getboard.content,
-            "createdAt" : getboard.createdAt
-        });
-    } else {
-        needboard.push({
-            "board_id" : getboard.board_id,
-            "user_id" : getboard.user_id,
-            "title" : getboard.title,
-            "content" : getboard.content,
-            "createdAt" : getboard.createdAt
-        });
-    }
-   
-    for (let i in parentcomment){
-        parentcomment[i].dataValues.child = [];
-        const soncomment = await board_comment.findAll({
-            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
-                "parent_id" : parentcomment[i].comment_id
-            }
-        });
-
-        for (let j in soncomment) {//자식댓글 push로 추가
-            parentcomment[i].dataValues.sons.push(soncomment[j]);
-        }
-    }
-
-    ctx.body = {content: { post: needboard, comment: parentcomment }};
-
-};
-
-// 게시판 좋아요
-export const board_res = async (ctx) => {
-
-    const uploadboard_res = Joi.object().keys({
-        user_id : Joi.number().required(),
-        likability : Joi.number()
-    });
-
-    const result = Joi.validate(ctx.request.body, uploadboard_res);
-
-    if(result.error) {
-        console.log("Register - Joi 형식 에러");
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "003"
-        };
-        return;
-    }
-
-    const token = ctx.header.token;
-
-    const decoded = await decodeToken(token);
-
-    await board_likability.create({
-        "board_id" : ctx.params.board_id,
-        "user_id" : decoded.user_id,
-        "likability" : ctx.request.body.likability
-    });
-
-    ctx.status = 200;
-};
-
-// 댓글 좋아요
-export const board_com_res = async (ctx) => {
-
-    const uploadBoard_com_res = Joi.object().keys({
-        comment_id : Joi.number().required(),
-        user_id : Joi.number().required(),
-        likability : Joi.number().required()
-    });
-
-    const result = Joi.validate(ctx.request.body, uploadBoard_com_res);
-
-    if(result.error) {
-        console.log("Register - Joi 형식 에러");
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "004"
-        };
-        return;
-    }
-    
-    const decoded = ctx.request.user;
-
-    // 좋아요를 누르면 좋아요를 누른 내용 id와 좋아요를 누른 사용자와, '좋아요' 문자 db create
-    await board_com_likability.create({
-       "comment_id" : ctx.params.comment_id,
-       "user_id" : decoded.user_id,
-       "likability" : ctx.request.body.likability
-    });
-
-    ctx.status = 200;
-};
-
-//게시판 삭제
-export const DeletePost = async (ctx) => {
-    // TODO: 유저 권한 확인
-    
-    const boardIdVerify = Joi.object().keys({
-        board_id: Joi.string().regex(/^\d+$/).required()
-    });
-    
-    const verification = Joi.validate(ctx.params, boardIdVerify);
-    
-    if (verification.error) {
-        console.log("DeleteBoard - Joi 형식 에러");
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "002"
-        };
-        return;
-    }
-    
-    const result = await board.destroy({where: {board_id: ctx.params.board_id}});
-    
-    if (!result) {
-        console.log("DeleteBoard - 대상이 존재하지 않음");
-        ctx.status = 400;
-        ctx.body = {
-            "error" : "003"
-        };
-        return;
-    }
-    
-    ctx.body = {
-        is_succeed: true
-    }
-};
-
-export const GetAllComment = async (ctx) => {
-    const board_id = ctx.params.board_id;
-    
-    // 부모 댓글 불러오기
-    const parentcomment = await board_comment.findAll({
-        where : {
-            "board_id" : board_id,
-            "parent_id" : null
-        }
-    });
-    
-    for (let i in parentcomment){
-        parentcomment[i].dataValues.sons = [];
-        const soncomment = await board_comment.findAll({
-            where : {// 댓글의 id(comment_id)가 부모댓글(parent_id)인 것을 찾아서 soncomment에 넣음
-                "parent_id" : parentcomment[i].comment_id
-            }
-        });
-        
-        for (let j in soncomment) {//자식댓글 push로 추가
-            parentcomment[i].dataValues.sons.push(soncomment[j]);
-        }
-    }
-    
-    ctx.body = parentcomment;
-};
-
 // 댓글 삭제
 export const DeleteComment = async (ctx) => {
     // TODO: 유저 권한 확인
@@ -492,31 +491,34 @@ export const DeleteComment = async (ctx) => {
     }
 };
 
-// 첨부 자료 정보
-export const BoardData = async (ctx) => {
+// 댓글 좋아요
+export const board_com_res = async (ctx) => {
 
-    const Uploadboard_data = Joi.object().keys({
-        upload_url : Joi.string().max(62525)
+    const uploadBoard_com_res = Joi.object().keys({
+        comment_id : Joi.number().required(),
+        user_id : Joi.number().required(),
+        likability : Joi.number().required()
     });
 
-    const result = Joi.validate(ctx.request.body, Uploadboard_data);
+    const result = Joi.validate(ctx.request.body, uploadBoard_com_res);
 
-     // 비교한 뒤 만약 에러가 발생한다면 400 에러코드를 전송하고, body에 001 이라는 내용(우리끼리의 오류 코드 약속)을 담아 joi 오류임을 알려줌
-
-     if(result.error) {
+    if(result.error) {
         console.log("Register - Joi 형식 에러");
         ctx.status = 400;
         ctx.body = {
-            "error" : "001"
+            "error" : "004"
         };
         return;
     }
+    
+    const decoded = ctx.request.user;
 
-        await board_data.create({
-            "board_id" : ctx.params.board_id,
-            "upload_url" : ctx.request.body.upload_url
-        });
+    // 좋아요를 누르면 좋아요를 누른 내용 id와 좋아요를 누른 사용자와, '좋아요' 문자 db create
+    await board_com_likability.create({
+       "comment_id" : ctx.params.comment_id,
+       "user_id" : decoded.user_id,
+       "likability" : ctx.request.body.likability
+    });
 
-        ctx.status = 200;
-        ctx.body = ctx.params.board_id;
+    ctx.status = 200;
 };
