@@ -17,12 +17,12 @@
     "mariadb": "^2.0.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
-    "mongoose": "^5.5.0",
+    "mongoose": "^5.7.5",
     "morgan": "^1.9.1",
     "mysql": "^2.17.1",
     "node-school-kr": "^2.1.1",
     "nodemon": "^1.19.1",
-    "sequelize": "^5.7.5",
+    "sequelize": "^5.15.1",
     "sequelize-cli": "^5.4.0"
   },
   "scripts": {
