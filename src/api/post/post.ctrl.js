@@ -48,7 +48,6 @@ export const uploadBoard = async (ctx) => {
         return;
     }
     
-    console.log(ctx.request.user);
     const decoded = ctx.request.user;
 
     if (ctx.request.body.kind === 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면
@@ -104,7 +103,6 @@ export const UpdatePost = async (ctx) => {
         return;
     }
     
-    console.log(ctx.request.user);
     const decoded = ctx.request.user;
     
     if(ctx.request.body.kind === 1){ // 만약 작성하려는 게시판이 공지사항 게시판이라면
@@ -157,7 +155,7 @@ export const GetComment = async (ctx) => {
         }
     });
     
-    for (let j in childCmt) {//자식댓글 push로 추가
+    for (let j in childCmt) { //자식댓글 push로 추가
         cmt.dataValues.sons.push(childCmt);
     }
     
@@ -204,19 +202,23 @@ export const uploadComment = async (ctx) => {
         }
     }
     
-    const token = ctx.header.token;
+    const decoded = ctx.request.user;
 
-    const decoded = await decodeToken(token);
-
-    await board_comment.create({
+    const temp = await board_comment.create({
         "board_id" : ctx.params.board_id,
         "user_id" : decoded.user_id,
         "parent_id" : ctx.request.body.parent_id,
         "content" : ctx.request.body.content
     });
     
+    console.log(temp);
+    
     ctx.status = 200;
     ctx.body = decoded.user_id;
+};
+
+export const UpdateComment = async (ctx) => {
+
 };
 
 // 게시판 가져오기
@@ -274,7 +276,7 @@ export const GetPost = async (ctx) => {
         }
     }
 
-    ctx.body = {contents: { post: needboard, comment: parentcomment }};
+    ctx.body = {content: { post: needboard, comment: parentcomment }};
 
 };
 
@@ -329,10 +331,8 @@ export const board_com_res = async (ctx) => {
         };
         return;
     }
-
-    const token = ctx.header.token;
-
-    const decoded = await decodeToken(token);
+    
+    const decoded = ctx.request.user;
 
     // 좋아요를 누르면 좋아요를 누른 내용 id와 좋아요를 누른 사용자와, '좋아요' 문자 db create
     await board_com_likability.create({
