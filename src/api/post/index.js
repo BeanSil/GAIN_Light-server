@@ -33,7 +33,7 @@ post.put('/comment/:board_id/:comment_id', UpdateComment); // TODO: Debug
 post.post('/comment/:board_id/:comment_id/like', board_com_res);
 post.delete('/comment/:board_id/:comment_id', DeleteComment); // TODO: 게시판 id 댓글 id 검증
 
-
+post.get('/board',getBoard); // new
 
 
 export default post;

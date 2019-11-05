@@ -368,7 +368,6 @@ export const uploadComment = async (ctx) => {
         return;
     }
 
-
     if(ctx.request.body.parent_id !== null){
         const a = await board_comment.findOne({
             where : {
