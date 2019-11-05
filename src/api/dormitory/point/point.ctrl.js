@@ -1,10 +1,8 @@
 import Joi from 'joi';
-import { decodeToken } from '../../lib/token';
-import { points,student } from '../../models';
+import { decodeToken } from '../../../lib/token';
+import { points,student } from '../../../models';
 
 export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 point에 값 누적 , 관리자용!
-    console.log("도착");
-
     const Request = Joi.object().keys({
         giver_id:Joi.number().integer().required(),
         receiver_id:Joi.number().integer().required(),
