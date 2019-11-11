@@ -63,7 +63,7 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
         };
     } catch (error) {
         console.error(error);
-        return next(error);
+        ctx.status = 500;
     } 
 };
 
@@ -75,7 +75,7 @@ export const ALLPOINT = async (ctx) => { //상벌점 전체 조회-관리자 , �
         ctx.body = allStudentPoint;
     } catch(error) {
         console.error(error);
-        return next(error);
+        return ctx.status = 500;
     }
 };
 
@@ -96,7 +96,7 @@ export const INDIVIDUALPOINT= async (ctx)=>{  //상벌점 본인 조회-로그�
         ctx.body = Studentallstatus;
     } catch(error) {
         console.error(error);
-        return next(error);
+        return ctx.status = 500;
     }
 };
 
@@ -169,7 +169,7 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
         ctx.status = 200;
     } catch(error) {
         console.error(error);
-        next(error);
+        ctx.status = 500;
     }
 };
 
@@ -215,6 +215,6 @@ export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 po
         
     } catch(error) {
         console.error(error);
-        next(error);
+        ctx.status = 500;
     }
 };
