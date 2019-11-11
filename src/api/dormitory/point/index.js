@@ -1,5 +1,6 @@
 import Router from 'koa-router';
 import {ALLPOINT, DEL_POINT, INDIVIDUALPOINT, POINT, PUT_POINT} from "./point.ctrl";
+import {UserVerification} from "../room/room.ctrl";
 
 const point = new Router();
 
