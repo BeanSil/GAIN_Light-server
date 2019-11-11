@@ -134,11 +134,14 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
             attributes:["amount","kind"]
         });
 
-        await points.update({  //수정
-            where:{
-                point_id:id
-            },giver_id,receiver_id,kind,amount,reason_id,detail
-        });
+        await points.update({
+            giver_id: giver_id,
+            receiver_id: receiver_id,
+            kind: kind,
+            amount: amount,
+            reason_id: reason_id,
+            detail: detail
+        }, { where: { point_id: id } });
 
         const StudentpastPoint = await student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수: StudentpastPoint
             where: {
