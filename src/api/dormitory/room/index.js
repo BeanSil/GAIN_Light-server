@@ -3,8 +3,6 @@ import {SetRoom, GetRooms, GetRoomByRoomId, GetRoomByUserId, UserVerification} f
 
 import apply from './apply'
 
-import { jwtMiddleware } from '../../../lib/token.js';
-
 const room = new Router();
 
 room.use(UserVerification);
