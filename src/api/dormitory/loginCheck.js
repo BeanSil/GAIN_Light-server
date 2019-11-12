@@ -12,6 +12,7 @@ export const isLoggedIn = async (ctx,next) =>{  //로그인 했는지 검사
         next();
     }else{
         console.log("로그인이 필요합니다!");
+        ctx.status = 401;
         ctx.body="로그인 필요";
     }
 };
@@ -32,11 +33,12 @@ export const adminLoggedIn = async (ctx,next) => { //관리자(선생님) 인지
         console.log(userAuth.auth);
 
     
-        if(userAuth.auth=="선생님"){
+        if(userAuth.auth === "선생님"){
             console.log('선생님 확인됨!');
             next();
         }else{
             console.log("선생님이 아닙니다!");
+            ctx.status = 401;
             ctx.body = "error";
             console.log("ㅁㅇㄻㄴㅇㄹ");
         }
@@ -62,11 +64,12 @@ export const studentLoggedIn = async (ctx,next) =>{//학생인지 검사
             next();
         }else{
             console.log("학생이 아닙니다!");
-                ctx.body = {
-                    error : '학생이 아닙니다!'
-                };
+            ctx.status = 401;
+            ctx.body = {
+                error : '학생이 아닙니다!'
+            };
         }
-    }catch(error){
+    } catch(error) {
         console.error(error);
     }
     
