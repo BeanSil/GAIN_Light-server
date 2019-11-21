@@ -53,8 +53,12 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
         }
         // 지금까지 받은 상벌점 총 합계와 지금 받은 상벌점을 더한다.
 
-        await pastPoint.update({ // TODO: Possible Bug
+        await student.update({ // TODO: Possible Bug
             "point": currentPoint
+        }, {
+            where: {
+                user_id: receiver_id
+            }
         });
 
         ctx.status = 200;
@@ -68,9 +72,9 @@ export const POINT = async (ctx) => {  //상벌점 등록 + student테이블의 
 };
 
 
-export const ALLPOINT = async (ctx) => { //상벌점 전체 조회-관리자 , 관리자용!
+export const ALLPOINT = async (ctx) => { // 상벌점 전체 조회-관리자 , 관리자용!
     try{
-        const allStudentPoint=await points.findAll();
+        const allStudentPoint = await points.findAll();
         ctx.status = 200;
         ctx.body = allStudentPoint;
     } catch(error) {
@@ -80,7 +84,7 @@ export const ALLPOINT = async (ctx) => { //상벌점 전체 조회-관리자 , �
 };
 
 
-export const INDIVIDUALPOINT= async (ctx)=>{  //상벌점 본인 조회-로그인한 본인
+export const INDIVIDUALPOINT = async (ctx)=>{  //상벌점 본인 조회-로그인한 본인
     console.log("도착");
     const token = ctx.header.token;
     const decoded = await decodeToken(token);
@@ -143,21 +147,21 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
             detail: detail
         }, { where: { point_id: id } });
 
-        const StudentpastPoint = await student.findOne({ //student테이블 에서 지금까지 누적된 상벌점 점수: StudentpastPoint
+        const StudentpastPoint = await student.findOne({ // student테이블 에서 지금까지 누적된 상벌점 점수: StudentpastPoint
             where: {
                 user_id: receiver_id
             },
             attributes: ["point"]
         });
         let pastPoint;
-        if (wrongPoint.kind === "벌점") {    //벌점이면 -1곱하기
+        if (wrongPoint.kind === "벌점") {    // 벌점이면 -1곱하기
             pastPoint = wrongPoint.amount*(-1);
         } else {
             pastPoint = wrongPoint.amount;
         }
 
         let amountPoint;
-        if(kind === "벌점"){  //벌점이면 -1곱하기
+        if(kind === "벌점"){  // 벌점이면 -1곱하기
             amountPoint = amount*(-1);
         } else {
             amountPoint = amount;
@@ -177,7 +181,7 @@ export const PUT_POINT=async(ctx)=>{  // 상벌점 수정 + student테이블의 
 };
 
 
-export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
+export const DEL_POINT = async (ctx) => { // 상벌점 삭제 + student테이블의 point에 값 누적, 관리자용!
     const { id } = ctx.params;
 
     try{
@@ -203,7 +207,7 @@ export const DEL_POINT=async(ctx)=>{ //상벌점 삭제 + student테이블의 po
         
         let minusPoint;
         if (columeInformation.kind === "벌점") {  //벌점이면 -1곱하기
-            minusPoint = columeInformation.amount*(-1);
+            minusPoint = columeInformation.amount * (-1);
         } else {
             minusPoint = columeInformation.amount;
         }
