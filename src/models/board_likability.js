@@ -1,11 +1,11 @@
-export const Board_likability = (sequelize, DataTypes) => {
-    return sequelize.define('board_likability',{
+export const Board_data = (sequelize, DataTypes) => {
+    return sequelize.define('board_data',{
         
         board_id : {
-            type : DataTypes.INTEGER
+            type : DataTypes.INTEGER(5)
         },
         user_id : {
-            type : DataTypes.INTEGER
+            type : DataTypes.INTEGER(30)   
         },
         likability : {
             type : DataTypes.ENUM("좋아요","싫어요")
