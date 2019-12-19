@@ -1,31 +1,31 @@
 export const Board_comment = (sequelize, DataTypes) => {
     return sequelize.define('board_comment',{
         comment_id : {
-            type : DataTypes.INTEGER(5),
+            type : DataTypes.INTEGER,
             primaryKey : true,
-            auto_increment : true
+            autoIncrement : true
         },
         board_id : {
-            type : DataTypes.INTEGER(5)
+            type : DataTypes.INTEGER
         },
         user_id : {
-            type : DataTypes.INTEGER(30)   
+            type : DataTypes.INTEGER
         },
         parent_id : {
-            type : DataTypes.INTEGER(30),
-            default : Null
+            type : DataTypes.INTEGER,
+            default : null
         },
         content : {
             type : DataTypes.TEXT,
             allowNull : false
         },
         created_at : {
-            type : DataTypes.DATETIME,
-            default : now()
+            type : DataTypes.DATE,
+            defaultValue: DataTypes.NOW
         },
         updated_at : {
-            type : DataTypes.DATETIME,
-            default : now()
+            type : DataTypes.DATE,
+            defaultValue: DataTypes.NOW
         }
     });
 };

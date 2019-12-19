@@ -1,5 +1,5 @@
 export const Room = (sequelize, DataTypes) => {
-    return sequelize.define("Rooms", {
+    return sequelize.define("room", {
         allocation_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -7,19 +7,22 @@ export const Room = (sequelize, DataTypes) => {
         },
         room_no: {
             type: DataTypes.INTEGER,
-            allowNull: false,
-            unique: true
+            allowNull: false
         },
         user_id: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
+        is_banned: {
+            type: DataTypes.TINYINT,
+            default: 0
+        },
         year: {
-            type: DataTypes.YEAR,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         quarter: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.TINYINT,
             allowNull: false
         }
     }, {
@@ -34,7 +37,11 @@ export const RoomApply = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        user_id: {
+        length: {
+            type: DataTypes.TINYINT,
+            allowNull: false
+        },
+        user_id1: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -44,11 +51,11 @@ export const RoomApply = (sequelize, DataTypes) => {
         },
         user_id3: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         user_id4: {
             type: DataTypes.INTEGER,
-            allowNull: false
+            allowNull: true
         },
         user_id5: {
             type: DataTypes.INTEGER,
